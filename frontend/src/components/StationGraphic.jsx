@@ -146,9 +146,12 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
               strokeDasharray="5,5"
             />
 
-            {/* Layer visualization */}
+            {/* Layer visualization - stacked sandwich style */}
             {layers.map((layer, layerIndex) => {
-              const layerY = centerY + 50 + (layerIndex * 80);
+              // Calculate cumulative thickness from bottom up
+              const layersBelow = layers.slice(0, layerIndex);
+              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + (l.dicke * 100), 0);
+              const layerStartY = centerY + 50 + cumulativeThickness; // Start position for this layer
               const layerThickness = layer.dicke * 100; // Scale thickness for visualization
               const layerColor = layerColors[layerIndex % layerColors.length];
               
@@ -157,13 +160,13 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                   {/* Layer label */}
                   <text
                     x={10}
-                    y={layerY + layerThickness / 2 + 5}
+                    y={layerStartY + layerThickness / 2 + 5}
                     className="text-xs fill-slate-600 font-medium"
                   >
                     {layer.name} ({layer.dicke}m)
                   </text>
                   
-                  {/* Layer sections between stations */}
+                  {/* Layer sections between stations - no gaps */}
                   {stations.slice(0, -1).map((station, stationIndex) => {
                     const nextStation = stations[stationIndex + 1];
                     const sectionKey = `${station.id}-${nextStation.id}`;
@@ -176,16 +179,20 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                     
                     return (
                       <g key={sectionKey}>
-                        {/* Layer section rectangle */}
+                        {/* Layer section as solid rectangle - trapezoidal shape following profile */}
                         <path
-                          d={`M ${x1 - width1/2} ${layerY} 
-                              L ${x2 - width2/2} ${layerY}
-                              L ${x2 + width2/2} ${layerY + layerThickness}
-                              L ${x1 + width1/2} ${layerY + layerThickness} Z`}
+                          d={`M ${x1 - width1/2} ${layerStartY} 
+                              L ${x2 - width2/2} ${layerStartY}
+                              L ${x2 + width2/2} ${layerStartY}
+                              L ${x1 + width1/2} ${layerStartY}
+                              L ${x1 + width1/2} ${layerStartY + layerThickness}
+                              L ${x2 + width2/2} ${layerStartY + layerThickness}
+                              L ${x2 - width2/2} ${layerStartY + layerThickness}
+                              L ${x1 - width1/2} ${layerStartY + layerThickness} Z`}
                           fill={isActive ? layerColor : '#e2e8f0'}
                           fillOpacity={isActive ? 0.8 : 0.3}
                           stroke={layerColor}
-                          strokeWidth="2"
+                          strokeWidth="1"
                           className="cursor-pointer transition-all duration-200"
                           onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
                         />
@@ -193,7 +200,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                         {/* Section activation button */}
                         <circle
                           cx={(x1 + x2) / 2}
-                          cy={layerY + layerThickness / 2}
+                          cy={layerStartY + layerThickness / 2}
                           r="8"
                           fill={isActive ? layerColor : '#94a3b8'}
                           className="cursor-pointer"
@@ -201,17 +208,17 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                         />
                         <text
                           x={(x1 + x2) / 2}
-                          y={layerY + layerThickness / 2 + 3}
+                          y={layerStartY + layerThickness / 2 + 3}
                           textAnchor="middle"
                           className="text-xs fill-white font-bold cursor-pointer pointer-events-none"
                         >
                           {isActive ? '✓' : '○'}
                         </text>
                         
-                        {/* Area display */}
+                        {/* Area display below layer */}
                         <text
                           x={(x1 + x2) / 2}
-                          y={layerY + layerThickness + 15}
+                          y={layerStartY + layerThickness + 15}
                           textAnchor="middle"
                           className="text-xs fill-slate-600"
                         >
@@ -220,6 +227,26 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                       </g>
                     );
                   })}
+                  
+                  {/* Layer boundary lines for sandwich effect */}
+                  <line
+                    x1={margin}
+                    y1={layerStartY}
+                    x2={svgWidth - margin}
+                    y2={layerStartY}
+                    stroke={layerColor}
+                    strokeWidth="2"
+                    opacity="0.7"
+                  />
+                  <line
+                    x1={margin}
+                    y1={layerStartY + layerThickness}
+                    x2={svgWidth - margin}
+                    y2={layerStartY + layerThickness}
+                    stroke={layerColor}
+                    strokeWidth="2"
+                    opacity="0.7"
+                  />
                 </g>
               );
             })}
