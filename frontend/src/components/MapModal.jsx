@@ -126,7 +126,7 @@ const MapModal = ({ isOpen, onClose, pointsOfInterest, onAddPOI, poiTypes }) => 
                       type="text"
                       value={newPOI.name}
                       onChange={(e) => setNewPOI(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="POI Name eingeben"
+                      placeholder="POI Name (optional)"
                       className="w-full px-3 py-1 border rounded text-sm"
                     />
                   </div>
