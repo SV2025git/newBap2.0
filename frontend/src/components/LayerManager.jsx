@@ -17,7 +17,9 @@ const LayerManager = ({ layers, onLayersChange, onClose }) => {
   const { toast } = useToast();
 
   const calculateEinbaugewicht = (dichte, dicke) => {
-    return (parseFloat(dichte) || 0) * (parseFloat(dicke) || 0);
+    // dichte in g/cm³, dicke in cm
+    // Convert to kg/m²: (g/cm³ * cm * 10) = kg/m²
+    return (parseFloat(dichte) || 0) * (parseFloat(dicke) || 0) * 10;
   };
 
   const addLayer = () => {
