@@ -76,7 +76,7 @@ const MaterialCalculation = ({ stations, layers, sectionActivation }) => {
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-slate-700">Material gesamt:</span>
                 <span className="font-mono font-bold text-green-700">
-                  {layer.totalMaterial.toFixed(2)} kg
+                  {(layer.totalMaterial / 1000).toFixed(2)} t
                 </span>
               </div>
             </div>
