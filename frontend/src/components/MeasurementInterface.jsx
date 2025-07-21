@@ -21,12 +21,26 @@ const MeasurementInterface = () => {
   const [zoomLevel, setZoomLevel] = useState(0.5); // Start at 50% height
   const [showVoraufmass, setShowVoraufmass] = useState(true); // Show initial measurement
   const [showSchichten, setShowSchichten] = useState(true); // Show layers
+  const [showPOI, setShowPOI] = useState(true); // Show POIs
   const [isGraphicsFixed, setIsGraphicsFixed] = useState(false); // Fixed position toggle
   const [pointsOfInterest, setPointsOfInterest] = useState([]); // Points of interest
-  const [newPOI, setNewPOI] = useState({ station: '', name: '' }); // New point of interest
-  const [showMap, setShowMap] = useState(false); // Map visibility
+  const [newPOI, setNewPOI] = useState({ station: '', name: '', type: 'Beginn' }); // New point of interest
+  const [showMapModal, setShowMapModal] = useState(false); // Map modal visibility
+  const [editingPOI, setEditingPOI] = useState(null); // POI being edited
   const [geofences, setGeofences] = useState([]); // Geofences
   const { toast } = useToast();
+
+  // POI types with symbols
+  const poiTypes = {
+    'Beginn': '🚀',
+    'Ende': '🏁',
+    'Einfahrt': '🚪',
+    'Wendeplatz': '🔄',
+    'Putzplatz': '🧹',
+    'Hochspannung': '⚡',
+    'Brücke': '🌉',
+    'Custom': '📍'
+  };
 
   const addPointOfInterest = () => {
     if (!newPOI.station || !newPOI.name) {
