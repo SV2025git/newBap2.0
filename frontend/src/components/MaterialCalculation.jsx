@@ -106,7 +106,7 @@ const MaterialCalculation = ({ stations, layers, sectionActivation }) => {
       )}
 
       <div className="text-xs text-muted-foreground bg-slate-50 p-3 rounded">
-        <strong>Hinweis:</strong> Materialberechnung erfolgt durch Multiplikation der 
+        <strong>Hinweis:</strong> Tonnage-Berechnung erfolgt durch Multiplikation der 
         Trapezflächen zwischen den Stationen mit dem jeweiligen Einbaugewicht. 
         Nur aktive Abschnitte (✓) werden in die Berechnung einbezogen.
       </div>
