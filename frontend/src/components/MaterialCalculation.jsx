@@ -88,17 +88,17 @@ const MaterialCalculation = ({ stations, layers, sectionActivation }) => {
         <div className="p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border">
           <div className="flex justify-between items-center">
             <div>
-              <h4 className="font-bold text-lg text-slate-800">Projekt Gesamt</h4>
+              <h4 className="font-bold text-lg text-slate-800">Gesamttonnage</h4>
               <p className="text-sm text-muted-foreground">
                 {layers.length} Schichten, {stations.length} Stationen
               </p>
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-green-700">
-                {totalProjectMaterial.toFixed(2)} kg
+                {(totalProjectMaterial / 1000).toFixed(2)} t
               </div>
               <div className="text-sm text-muted-foreground">
-                ≈ {(totalProjectMaterial / 1000).toFixed(2)} t
+                ({totalProjectMaterial.toFixed(0)} kg)
               </div>
             </div>
           </div>
