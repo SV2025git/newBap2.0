@@ -137,8 +137,98 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
             
-            {/* Points of Interest - shown above initial measurement */}
-            {pointsOfInterest.map((poi) => {
+            {/* POI Diagram - separate section */}
+            {showPOI && pointsOfInterest.length > 0 && (
+              <>
+                {/* POI section background */}
+                <rect
+                  x={margin}
+                  y={poiStartY}
+                  width={svgWidth - 2 * margin}
+                  height={poiHeight}
+                  fill="#fef3c7"
+                  stroke="#f59e0b"
+                  strokeWidth="2"
+                  opacity="0.3"
+                  rx="5"
+                />
+                
+                {/* POI section title */}
+                <text
+                  x={margin + 10}
+                  y={poiStartY + (20 * zoomLevel)}
+                  className="fill-amber-700 font-bold"
+                  fontSize={Math.max(12 * zoomLevel, 8)}
+                >
+                  Points of Interest
+                </text>
+
+                {/* Station reference line */}
+                <line
+                  x1={margin}
+                  y1={poiStartY + (40 * zoomLevel)}
+                  x2={svgWidth - margin}
+                  y2={poiStartY + (40 * zoomLevel)}
+                  stroke="#d1d5db"
+                  strokeWidth="1"
+                  strokeDasharray="2,2"
+                />
+
+                {/* POI markers in diagram */}
+                {pointsOfInterest.map((poi) => {
+                  const x = scaleX(poi.station);
+                  const poiY = poiStartY + (40 * zoomLevel);
+                  
+                  return (
+                    <g key={poi.id}>
+                      {/* POI marker */}
+                      <circle
+                        cx={x}
+                        cy={poiY}
+                        r={12 * zoomLevel}
+                        fill="#f59e0b"
+                        stroke="white"
+                        strokeWidth="2"
+                        className="drop-shadow"
+                      />
+                      {/* POI symbol */}
+                      <text
+                        x={x}
+                        y={poiY + (4 * zoomLevel)}
+                        textAnchor="middle"
+                        className="pointer-events-none"
+                        fontSize={Math.max(14 * zoomLevel, 10)}
+                      >
+                        {poiTypes[poi.type] || '📍'}
+                      </text>
+                      {/* POI name */}
+                      <text
+                        x={x}
+                        y={poiY - (18 * zoomLevel)}
+                        textAnchor="middle"
+                        className="fill-amber-700 font-bold"
+                        fontSize={Math.max(10 * zoomLevel, 8)}
+                      >
+                        {poi.name}
+                      </text>
+                      {/* Station value */}
+                      <text
+                        x={x}
+                        y={poiY + (25 * zoomLevel)}
+                        textAnchor="middle"
+                        className="fill-amber-600 text-xs"
+                        fontSize={Math.max(8 * zoomLevel, 6)}
+                      >
+                        {poi.station.toFixed(1)}m
+                      </text>
+                    </g>
+                  );
+                })}
+              </>
+            )}
+
+            {/* Points of Interest - shown above initial measurement (legacy) */}
+            {false && pointsOfInterest.map((poi) => {
               const x = scaleX(poi.station);
               const poiY = showVoraufmass ? voraufmassCenterY - (120 * zoomLevel) : 50 * zoomLevel; // Above the initial measurement
               
@@ -162,7 +252,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                     className="fill-white font-bold pointer-events-none"
                     fontSize={Math.max(10 * zoomLevel, 8)}
                   >
-                    📍
+                    {poiTypes[poi.type] || '📍'}
                   </text>
                   {/* POI label */}
                   <text
