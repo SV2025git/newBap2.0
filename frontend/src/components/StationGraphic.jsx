@@ -14,7 +14,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
   // Calculate dimensions
   const svgWidth = 800;
   const baseHeight = 400;
-  const totalLayerThickness = layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 100, 30), 0);
+  const totalLayerThickness = layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2, 25), 0); // Dicke in cm
   const svgHeight = baseHeight + totalLayerThickness + 200; // Extra space for labels and gap
   const margin = 50;
   const centerY = 200; // Fixed center for main profile
