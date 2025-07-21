@@ -11,13 +11,13 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
   const [dragStartStation, setDragStartStation] = useState(0);
   const svgRef = useRef(null);
 
-  // Calculate dimensions
+  // Calculate dimensions with zoom applied to height only
   const svgWidth = 800;
-  const baseHeight = 300; // Reduced base height
-  const totalLayerThickness = layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2, 25), 0); // Dicke in cm
-  const svgHeight = baseHeight + totalLayerThickness + 100; // Reduced extra space for labels
+  const baseHeight = 300 * zoomLevel; // Apply zoom to height
+  const totalLayerThickness = layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2 * zoomLevel, 25 * zoomLevel), 0); // Apply zoom to layer thickness
+  const svgHeight = baseHeight + totalLayerThickness + (100 * zoomLevel); // Apply zoom to total height
   const margin = 50;
-  const centerY = 150; // Reduced center position
+  const centerY = 150 * zoomLevel; // Apply zoom to center position
   
   // Find min/max stations for scaling
   const minStation = stations.length > 0 ? Math.min(...stations.map(s => s.station)) : 0;
