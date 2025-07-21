@@ -13,11 +13,13 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
 
   // Calculate dimensions with zoom applied to height only
   const svgWidth = 800;
-  const baseHeight = 300 * zoomLevel; // Apply zoom to height
-  const totalLayerThickness = layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2 * zoomLevel, 25 * zoomLevel), 0); // Apply zoom to layer thickness
-  const svgHeight = baseHeight + totalLayerThickness + (100 * zoomLevel); // Apply zoom to total height
+  const voraufmassHeight = showVoraufmass ? 200 * zoomLevel : 0;
+  const layerHeight = showSchichten ? layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2 * zoomLevel, 25 * zoomLevel), 0) : 0;
+  const spacingBetween = (showVoraufmass && showSchichten) ? 10 * zoomLevel : 0; // 10px spacing when both visible
+  const svgHeight = voraufmassHeight + spacingBetween + layerHeight + (50 * zoomLevel); // Total height
   const margin = 50;
-  const centerY = 150 * zoomLevel; // Apply zoom to center position
+  const voraufmassCenterY = showVoraufmass ? 100 * zoomLevel : 0; // Center for initial measurement
+  const layerStartY = showVoraufmass ? voraufmassHeight + spacingBetween : 25 * zoomLevel; // Start position for layers
   
   // Find min/max stations for scaling
   const minStation = stations.length > 0 ? Math.min(...stations.map(s => s.station)) : 0;
