@@ -104,38 +104,40 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
               strokeDasharray="5,5"
             />
             
-            {/* Polygon connections - top and bottom edges */}
+            {/* Profile lines connecting station tops and bottoms */}
             {stations.length > 1 && (
               <>
-                {/* Top polygon connection */}
+                {/* Top profile line */}
                 <path
-                  d={`M ${stations.map((station, index) => {
+                  d={stations.map((station, index) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20);
                     return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
-                  }).join(' ')}`}
+                  }).join(' ')}
                   fill="none"
                   stroke="#3b82f6"
-                  strokeWidth="2"
+                  strokeWidth="3"
                   strokeLinejoin="round"
+                  strokeLinecap="round"
                 />
                 
-                {/* Bottom polygon connection */}
+                {/* Bottom profile line */}
                 <path
-                  d={`M ${stations.map((station, index) => {
+                  d={stations.map((station, index) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20);
                     return `${index === 0 ? 'M' : 'L'} ${x} ${centerY + halfWidth}`;
-                  }).join(' ')}`}
+                  }).join(' ')}
                   fill="none"
                   stroke="#3b82f6"
-                  strokeWidth="2"
+                  strokeWidth="3"
                   strokeLinejoin="round"
+                  strokeLinecap="round"
                 />
                 
-                {/* Full polygon fill */}
+                {/* Fill area between the profile lines */}
                 <path
-                  d={`M ${stations.map((station, index) => {
+                  d={`${stations.map((station, index) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20);
                     return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
@@ -144,9 +146,43 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
                     const halfWidth = (station.width * 20);
                     return `L ${x} ${centerY + halfWidth}`;
                   }).join(' ')} Z`}
-                  fill="rgba(59, 130, 246, 0.1)"
+                  fill="rgba(59, 130, 246, 0.15)"
                   stroke="none"
                 />
+
+                {/* Top profile points */}
+                {stations.map((station) => {
+                  const x = scaleX(station.station);
+                  const halfWidth = (station.width * 20);
+                  return (
+                    <circle
+                      key={`top-${station.id}`}
+                      cx={x}
+                      cy={centerY - halfWidth}
+                      r="4"
+                      fill="#3b82f6"
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                  );
+                })}
+
+                {/* Bottom profile points */}
+                {stations.map((station) => {
+                  const x = scaleX(station.station);
+                  const halfWidth = (station.width * 20);
+                  return (
+                    <circle
+                      key={`bottom-${station.id}`}
+                      cx={x}
+                      cy={centerY + halfWidth}
+                      r="4"
+                      fill="#3b82f6"
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                  );
+                })}
               </>
             )}
 
