@@ -7,6 +7,7 @@ import { Trash2, Edit3, Save, Plus } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import StationGraphic from './StationGraphic';
 import LayerManager from './LayerManager';
+import MaterialCalculation from './MaterialCalculation';
 import { mockStations } from '../utils/mockData';
 
 const MeasurementInterface = () => {
@@ -16,7 +17,39 @@ const MeasurementInterface = () => {
   const [projectName, setProjectName] = useState('Neues Messprojekt');
   const [layers, setLayers] = useState([]);
   const [showLayerManager, setShowLayerManager] = useState(false);
+  const [sectionActivation, setSectionActivation] = useState({}); // Track which sections are active for each layer
   const { toast } = useToast();
+
+  // Initialize section activation when stations or layers change
+  useEffect(() => {
+    const newSectionActivation = { ...sectionActivation };
+    
+    layers.forEach(layer => {
+      if (!newSectionActivation[layer.id]) {
+        newSectionActivation[layer.id] = {};
+      }
+      
+      // Create sections between consecutive stations
+      for (let i = 0; i < stations.length - 1; i++) {
+        const sectionKey = `${stations[i].id}-${stations[i + 1].id}`;
+        if (newSectionActivation[layer.id][sectionKey] === undefined) {
+          newSectionActivation[layer.id][sectionKey] = false; // Default to inactive
+        }
+      }
+    });
+    
+    setSectionActivation(newSectionActivation);
+  }, [stations, layers]);
+
+  const toggleSectionActivation = (layerId, sectionKey) => {
+    setSectionActivation(prev => ({
+      ...prev,
+      [layerId]: {
+        ...prev[layerId],
+        [sectionKey]: !prev[layerId]?.[sectionKey]
+      }
+    }));
+  };
 
   const addStation = () => {
     if (!newStation.station || !newStation.width) {
@@ -61,6 +94,7 @@ const MeasurementInterface = () => {
       name: projectName,
       stations,
       layers,
+      sectionActivation,
       savedAt: new Date().toISOString()
     };
     
@@ -81,7 +115,7 @@ const MeasurementInterface = () => {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Mess-Interface
             </h1>
-            <p className="text-muted-foreground mt-2">Station und Breite Verwaltung</p>
+            <p className="text-muted-foreground mt-2">Station und Breite Verwaltung mit Schichtberechnung</p>
           </div>
           <div className="flex items-center gap-4">
             <Input
@@ -97,11 +131,11 @@ const MeasurementInterface = () => {
           </div>
         </div>
 
-        {/* Station Graphic */}
+        {/* Station Graphic with Layers */}
         <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              Grafische Darstellung
+              Grafische Darstellung mit Schichten
               <div className="text-sm font-normal text-muted-foreground">
                 Stationen: {stations.length} | Gesamt: {stations.reduce((sum, s) => sum + s.width, 0).toFixed(2)}m
               </div>
@@ -110,20 +144,23 @@ const MeasurementInterface = () => {
           <CardContent>
             <StationGraphic 
               stations={stations} 
+              layers={layers}
+              sectionActivation={sectionActivation}
               onStationUpdate={updateStation}
               onStationDelete={deleteStation}
+              onSectionToggle={toggleSectionActivation}
             />
           </CardContent>
         </Card>
 
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Station Input Form */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Neue Station hinzufügen</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <Label htmlFor="station">Station (m)</Label>
                   <Input
@@ -183,7 +220,7 @@ const MeasurementInterface = () => {
                         <div>
                           <h4 className="font-medium">{layer.name}</h4>
                           <p className="text-sm text-muted-foreground">
-                            Dichte: {layer.dichte} | Dicke: {layer.dicke}m | 
+                            Dicke: {layer.dicke}m | 
                             Einbaugewicht: {layer.einbaugewicht} kg/m²
                           </p>
                         </div>
@@ -192,6 +229,20 @@ const MeasurementInterface = () => {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Material Calculation */}
+          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle>Materialberechnung</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MaterialCalculation
+                stations={stations}
+                layers={layers}
+                sectionActivation={sectionActivation}
+              />
             </CardContent>
           </Card>
         </div>
