@@ -15,11 +15,17 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
   const svgWidth = 800;
   const voraufmassHeight = showVoraufmass ? 200 * zoomLevel : 0;
   const layerHeight = showSchichten ? layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2 * zoomLevel, 25 * zoomLevel), 0) : 0;
-  const spacingBetween = (showVoraufmass && showSchichten) ? 10 * zoomLevel : 0; // 10px spacing when both visible
-  const svgHeight = voraufmassHeight + spacingBetween + layerHeight + (50 * zoomLevel); // Total height
+  const poiHeight = showPOI && pointsOfInterest.length > 0 ? 80 * zoomLevel : 0; // Height for POI diagram
+  const spacingBetween = 10 * zoomLevel; // 10px spacing between sections
+  const totalSpacing = (showVoraufmass && (showSchichten || showPOI)) ? spacingBetween : 0;
+  const totalSpacing2 = (showSchichten && showPOI) ? spacingBetween : 0;
+  const svgHeight = voraufmassHeight + layerHeight + poiHeight + totalSpacing + totalSpacing2 + (50 * zoomLevel); // Total height
   const margin = 50;
   const voraufmassCenterY = showVoraufmass ? 100 * zoomLevel : 0; // Center for initial measurement
   const layerStartY = showVoraufmass ? voraufmassHeight + spacingBetween : 25 * zoomLevel; // Start position for layers
+  const poiStartY = showVoraufmass || showSchichten ? 
+    (showVoraufmass ? voraufmassHeight : 0) + (showSchichten ? layerHeight : 0) + (showVoraufmass && showSchichten ? spacingBetween * 2 : spacingBetween) : 
+    25 * zoomLevel; // Start position for POI diagram
   
   // Find min/max stations for scaling
   const minStation = stations.length > 0 ? Math.min(...stations.map(s => s.station)) : 0;
