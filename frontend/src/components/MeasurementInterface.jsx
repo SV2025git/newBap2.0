@@ -7,7 +7,7 @@ import { Trash2, Edit3, Save, Plus } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import StationGraphic from './StationGraphic';
 import LayerManager from './LayerManager';
-import MaterialCalculation from './MaterialCalculation';
+import MapModal from './MapModal';
 import { mockStations, mockLayers } from '../utils/mockData';
 
 const MeasurementInterface = () => {
