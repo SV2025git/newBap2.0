@@ -357,10 +357,10 @@ const MeasurementInterface = () => {
             </CardContent>
           </Card>
 
-          {/* Material Calculation - 33% width */}
+          {/* Tonnage - 33% width */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm lg:col-span-1">
             <CardHeader>
-              <CardTitle>Materialberechnung</CardTitle>
+              <CardTitle>Tonnage</CardTitle>
             </CardHeader>
             <CardContent>
               <MaterialCalculation
