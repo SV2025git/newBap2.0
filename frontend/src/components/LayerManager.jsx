@@ -112,26 +112,26 @@ const LayerManager = ({ layers, onLayersChange, onClose }) => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dichte">Dichte (kg/m³)</Label>
+                  <Label htmlFor="dichte">Dichte (g/cm³)</Label>
                   <Input
                     id="dichte"
                     type="number"
                     step="0.1"
                     value={newLayer.dichte}
                     onChange={(e) => setNewLayer(prev => ({ ...prev, dichte: e.target.value }))}
-                    placeholder="2300"
+                    placeholder="2.3"
                     className="mt-1"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="dicke">Dicke (m)</Label>
+                  <Label htmlFor="dicke">Dicke (cm)</Label>
                   <Input
                     id="dicke"
                     type="number"
-                    step="0.01"
+                    step="1"
                     value={newLayer.dicke}
                     onChange={(e) => setNewLayer(prev => ({ ...prev, dicke: e.target.value }))}
-                    placeholder="0.04"
+                    placeholder="4"
                     className="mt-1"
                   />
                 </div>
