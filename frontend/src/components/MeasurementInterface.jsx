@@ -218,6 +218,14 @@ const MeasurementInterface = () => {
                   >
                     Schichten
                   </Button>
+                  <Button
+                    variant={showPOI ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowPOI(!showPOI)}
+                    className="px-3"
+                  >
+                    POI
+                  </Button>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
