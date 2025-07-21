@@ -252,7 +252,7 @@ const MeasurementInterface = () => {
           </CardContent>
         </Card>
 
-        <div className="grid lg:grid-cols-3 gap-6" style={{ marginTop: isGraphicsFixed ? '28vh' : '0' }}>
+        <div className="grid lg:grid-cols-3 gap-6" style={{ marginTop: isGraphicsFixed ? '28vh' : '0', marginBottom: '200px' }}>
           {/* Stations List - 66% width */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm lg:col-span-2">
             <CardHeader>
@@ -409,19 +409,151 @@ const MeasurementInterface = () => {
             </CardContent>
           </Card>
 
-          {/* Tonnage - 33% width */}
+          {/* Points of Interest - 33% width */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm lg:col-span-1">
             <CardHeader>
-              <CardTitle>Tonnage</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Points of Interest
+                <Button
+                  onClick={() => setShowMap(!showMap)}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  🗺️ Karte
+                </Button>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <MaterialCalculation
-                stations={stations}
-                layers={layers}
-                sectionActivation={sectionActivation}
-              />
+              <div className="space-y-4">
+                {/* Add new POI */}
+                <div className="grid grid-cols-1 gap-2">
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={newPOI.station}
+                    onChange={(e) => setNewPOI(prev => ({ ...prev, station: e.target.value }))}
+                    placeholder="Station (m)"
+                  />
+                  <Input
+                    value={newPOI.name}
+                    onChange={(e) => setNewPOI(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="POI Name"
+                  />
+                  <Button onClick={addPointOfInterest} size="sm" className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    POI hinzufügen
+                  </Button>
+                </div>
+
+                {/* POI List */}
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {pointsOfInterest.map((poi) => (
+                    <div key={poi.id} className="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
+                      <div>
+                        <h4 className="font-medium text-sm">{poi.name}</h4>
+                        <p className="text-xs text-muted-foreground">Station {poi.station.toFixed(1)}m</p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deletePointOfInterest(poi.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Geofence Section */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-sm mb-2">Geofence</h4>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => {
+                      toast({
+                        title: "Geofence",
+                        description: "Geofence-Funktion wird entwickelt"
+                      });
+                    }}
+                  >
+                    + Geofence hinzufügen
+                  </Button>
+                </div>
+
+                {/* Map placeholder */}
+                {showMap && (
+                  <div className="border rounded-lg p-4 bg-slate-100 h-48 flex items-center justify-center">
+                    <div className="text-center text-muted-foreground">
+                      <div className="text-4xl mb-2">🗺️</div>
+                      <p className="text-sm">Karte wird geladen...</p>
+                      <p className="text-xs mt-1">POIs: {pointsOfInterest.length}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Fixed Bottom Tonnage Panel */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t shadow-lg p-4 z-20">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg text-slate-800">Tonnage-Übersicht</h3>
+              <div className="flex items-center gap-8">
+                {layers.map((layer, index) => {
+                  // Calculate layer totals
+                  let totalArea = 0;
+                  for (let i = 0; i < stations.length - 1; i++) {
+                    const sectionKey = `${stations[i].id}-${stations[i + 1].id}`;
+                    const isActive = sectionActivation[layer.id]?.[sectionKey];
+                    if (isActive) {
+                      const distance = Math.abs(stations[i + 1].station - stations[i].station);
+                      const avgWidth = (stations[i].width + stations[i + 1].width) / 2;
+                      totalArea += distance * avgWidth;
+                    }
+                  }
+                  const totalTonnage = (totalArea * layer.einbaugewicht) / 1000;
+                  
+                  return (
+                    <div key={layer.id} className="flex items-center gap-4 px-4 py-2 bg-slate-50 rounded-lg">
+                      <div 
+                        className="w-4 h-4 rounded"
+                        style={{ backgroundColor: ['#ef4444', '#f97316', '#eab308'][index % 3] }}
+                      ></div>
+                      <div className="text-sm">
+                        <div className="font-medium">{layer.name}</div>
+                        <div className="text-muted-foreground">
+                          Fläche: {totalArea.toFixed(2)} m² | Tonnage: {totalTonnage.toFixed(2)} t
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div className="px-4 py-2 bg-green-100 rounded-lg">
+                  <div className="font-bold text-green-800">
+                    Gesamt: {layers.reduce((total, layer) => {
+                      let layerArea = 0;
+                      for (let i = 0; i < stations.length - 1; i++) {
+                        const sectionKey = `${stations[i].id}-${stations[i + 1].id}`;
+                        const isActive = sectionActivation[layer.id]?.[sectionKey];
+                        if (isActive) {
+                          const distance = Math.abs(stations[i + 1].station - stations[i].station);
+                          const avgWidth = (stations[i].width + stations[i + 1].width) / 2;
+                          layerArea += distance * avgWidth;
+                        }
+                      }
+                      return total + (layerArea * layer.einbaugewicht) / 1000;
+                    }, 0).toFixed(2)} t
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {showLayerManager && (
