@@ -31,6 +31,13 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
     setDraggedStation(station);
     setDragStartY(e.clientY);
     setDragStartWidth(station.width);
+    
+    // Store initial mouse X position and station position for horizontal dragging
+    const rect = svgRef.current.getBoundingClientRect();
+    const initialX = e.clientX - rect.left;
+    setDragStartX(initialX);
+    setDragStartStation(station.station);
+    
     e.preventDefault();
   };
 
@@ -38,11 +45,27 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
   const handleMouseMove = (e) => {
     if (!draggedStation) return;
     
-    const deltaY = dragStartY - e.clientY; // Inverted for intuitive dragging
-    const widthChange = deltaY * 0.02; // Scale factor for sensitivity
-    const newWidth = Math.max(0.1, dragStartWidth + widthChange);
+    const rect = svgRef.current.getBoundingClientRect();
+    const currentX = e.clientX - rect.left;
+    const currentY = e.clientY;
     
-    onStationUpdate(draggedStation.id, 'width', newWidth);
+    const deltaX = currentX - dragStartX;
+    const deltaY = dragStartY - currentY; // Inverted for intuitive dragging
+    
+    // Determine drag direction based on larger movement
+    const isDraggingHorizontally = Math.abs(deltaX) > Math.abs(deltaY);
+    
+    if (isDraggingHorizontally) {
+      // Horizontal drag - adjust station position
+      const stationDelta = (deltaX / (svgWidth - 2 * margin)) * stationRange;
+      const newStation = Math.max(0, dragStartStation + stationDelta);
+      onStationUpdate(draggedStation.id, 'station', newStation);
+    } else {
+      // Vertical drag - adjust width
+      const widthChange = deltaY * 0.02; // Scale factor for sensitivity
+      const newWidth = Math.max(0.1, dragStartWidth + widthChange);
+      onStationUpdate(draggedStation.id, 'width', newWidth);
+    }
   };
 
   // Handle drag end
@@ -50,6 +73,8 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
     setDraggedStation(null);
     setDragStartY(0);
     setDragStartWidth(0);
+    setDragStartX(0);
+    setDragStartStation(0);
   };
 
   useEffect(() => {
