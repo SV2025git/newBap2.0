@@ -43,19 +43,21 @@ const MeasurementInterface = () => {
   };
 
   const addPointOfInterest = () => {
-    if (!newPOI.station || !newPOI.name) {
+    if (!newPOI.station) {
       toast({
         title: "Fehler",
-        description: "Bitte Station und Name eingeben",
+        description: "Bitte Station eingeben",
         variant: "destructive"
       });
       return;
     }
 
+    const poiName = newPOI.name || `${poiTypes[newPOI.type]} ${newPOI.type}`;
+
     const poi = {
       id: Date.now(),
       station: parseFloat(newPOI.station),
-      name: newPOI.name,
+      name: poiName,
       type: newPOI.type || 'Beginn'
     };
 
