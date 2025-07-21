@@ -19,10 +19,11 @@ const MapModal = ({ isOpen, onClose, pointsOfInterest, onAddPOI, poiTypes }) => 
   };
 
   const handleOK = () => {
-    if (selectedPosition && newPOI.name) {
+    if (selectedPosition) {
+      const poiName = newPOI.name || `${poiTypes[newPOI.type]} ${newPOI.type}`;
       onAddPOI({
         station: selectedPosition.station,
-        name: newPOI.name,
+        name: poiName,
         type: newPOI.type
       });
       setSelectedPosition(null);
