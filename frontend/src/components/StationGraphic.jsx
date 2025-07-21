@@ -95,7 +95,7 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
     <div className="w-full bg-white rounded-lg border overflow-hidden">
       <div className="p-4 bg-slate-50 border-b">
         <h3 className="font-medium text-sm text-muted-foreground">
-          2D Querschnitt - Interaktiv (Ziehen zum Anpassen der Breite)
+          2D Querschnitt - Interaktiv (Horizontal ziehen = Station verschieben, Vertikal ziehen = Breite anpassen)
         </h3>
       </div>
       
