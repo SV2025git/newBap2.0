@@ -151,7 +151,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
               // Calculate cumulative thickness from bottom up
               const layersBelow = layers.slice(0, layerIndex);
               const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 2, 25), 0); // Dicke in cm, minimum 25px
-              const layerStartY = centerY + 120 + cumulativeThickness; // More space from initial measurement
+              const layerStartY = centerY + 80 + cumulativeThickness; // Reduced space from initial measurement (80px instead of 120px)
               const layerThickness = Math.max(layer.dicke * 2, 25); // Dicke in cm, minimum 25px for checkbox
               const layerColor = layerColors[layerIndex % layerColors.length];
               
@@ -161,15 +161,6 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
               
               return (
                 <g key={layer.id}>
-                  {/* Layer label */}
-                  <text
-                    x={10}
-                    y={layerStartY + layerThickness / 2 + 5}
-                    className="text-xs fill-slate-600 font-medium"
-                  >
-                    {layer.name} ({layer.dicke}cm)
-                  </text>
-                  
                   {/* Full rectangular layer block */}
                   <rect
                     x={leftmostX}
@@ -240,16 +231,6 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                           className="text-sm fill-white font-bold cursor-pointer pointer-events-none"
                         >
                           {isActive ? '✓' : '○'}
-                        </text>
-                        
-                        {/* Area display below layer */}
-                        <text
-                          x={(x1 + x2) / 2}
-                          y={layerStartY + layerThickness + 15}
-                          textAnchor="middle"
-                          className="text-xs fill-slate-600"
-                        >
-                          {isActive ? `${calculateSectionArea(station, nextStation).toFixed(1)}m²` : '-'}
                         </text>
                       </g>
                     );
