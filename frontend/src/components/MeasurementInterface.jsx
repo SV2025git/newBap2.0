@@ -21,6 +21,7 @@ const MeasurementInterface = () => {
   const [zoomLevel, setZoomLevel] = useState(0.5); // Start at 50% height
   const [showVoraufmass, setShowVoraufmass] = useState(true); // Show initial measurement
   const [showSchichten, setShowSchichten] = useState(true); // Show layers
+  const [isGraphicsFixed, setIsGraphicsFixed] = useState(false); // Fixed position toggle
   const { toast } = useToast();
 
   // Initialize section activation when stations or layers change - DEFAULT ALL ACTIVE
