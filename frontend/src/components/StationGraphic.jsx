@@ -138,22 +138,24 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
             <rect width="100%" height="100%" fill="url(#grid)" />
             
             {/* Center line */}
-            <line
-              x1={margin}
-              y1={centerY}
-              x2={svgWidth - margin}
-              y2={centerY}
-              stroke="#64748b"
-              strokeWidth="2"
-              strokeDasharray="5,5"
-            />
+            {showVoraufmass && (
+              <line
+                x1={margin}
+                y1={voraufmassCenterY}
+                x2={svgWidth - margin}
+                y2={voraufmassCenterY}
+                stroke="#64748b"
+                strokeWidth="2"
+                strokeDasharray="5,5"
+              />
+            )}
 
             {/* Layer visualization - rectangular blocks with uniform height */}
-            {layers.map((layer, layerIndex) => {
+            {showSchichten && layers.map((layer, layerIndex) => {
               // Calculate cumulative thickness from bottom up
               const layersBelow = layers.slice(0, layerIndex);
               const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 2 * zoomLevel, 25 * zoomLevel), 0); // Apply zoom
-              const layerStartY = centerY + (80 * zoomLevel) + cumulativeThickness; // Apply zoom to spacing
+              const thisLayerStartY = layerStartY + cumulativeThickness;
               const layerThickness = Math.max(layer.dicke * 2 * zoomLevel, 25 * zoomLevel); // Apply zoom to thickness
               const layerColor = layerColors[layerIndex % layerColors.length];
               
@@ -166,7 +168,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Full rectangular layer block */}
                   <rect
                     x={leftmostX}
-                    y={layerStartY}
+                    y={thisLayerStartY}
                     width={rightmostX - leftmostX}
                     height={layerThickness}
                     fill="#f1f5f9"
@@ -182,9 +184,9 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                       <line
                         key={`station-line-${station.id}-${layer.id}`}
                         x1={x}
-                        y1={layerStartY}
+                        y1={thisLayerStartY}
                         x2={x}
-                        y2={layerStartY + layerThickness}
+                        y2={thisLayerStartY + layerThickness}
                         stroke="#64748b"
                         strokeWidth="1"
                         strokeDasharray="2,2"
@@ -206,7 +208,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                         {/* Rectangular section block */}
                         <rect
                           x={x1}
-                          y={layerStartY}
+                          y={thisLayerStartY}
                           width={x2 - x1}
                           height={layerThickness}
                           fill={isActive ? layerColor : '#e2e8f0'}
@@ -220,7 +222,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                         {/* Section activation checkbox */}
                         <circle
                           cx={(x1 + x2) / 2}
-                          cy={layerStartY + layerThickness / 2}
+                          cy={thisLayerStartY + layerThickness / 2}
                           r={Math.max(6 * zoomLevel, 4)} // Scale checkbox with zoom
                           fill={isActive ? layerColor : '#94a3b8'}
                           className="cursor-pointer"
@@ -228,7 +230,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                         />
                         <text
                           x={(x1 + x2) / 2}
-                          y={layerStartY + layerThickness / 2 + (3 * zoomLevel)}
+                          y={thisLayerStartY + layerThickness / 2 + (3 * zoomLevel)}
                           textAnchor="middle"
                           className="fill-white font-bold cursor-pointer pointer-events-none"
                           fontSize={Math.max(12 * zoomLevel, 8)}
@@ -242,17 +244,17 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Layer boundary lines */}
                   <line
                     x1={leftmostX}
-                    y1={layerStartY}
+                    y1={thisLayerStartY}
                     x2={rightmostX}
-                    y2={layerStartY}
+                    y2={thisLayerStartY}
                     stroke={layerColor}
                     strokeWidth="2"
                   />
                   <line
                     x1={leftmostX}
-                    y1={layerStartY + layerThickness}
+                    y1={thisLayerStartY + layerThickness}
                     x2={rightmostX}
-                    y2={layerStartY + layerThickness}
+                    y2={thisLayerStartY + layerThickness}
                     stroke={layerColor}
                     strokeWidth="2"
                   />
@@ -260,15 +262,15 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
               );
             })}
             
-            {/* Profile lines connecting station tops and bottoms */}
-            {stations.length > 1 && (
+            {/* Profile lines connecting station tops and bottoms - only if Voraufmass is shown */}
+            {showVoraufmass && stations.length > 1 && (
               <>
                 {/* Top profile line */}
                 <path
                   d={stations.map((station, index) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
+                    return `${index === 0 ? 'M' : 'L'} ${x} ${voraufmassCenterY - halfWidth}`;
                   }).join(' ')}
                   fill="none"
                   stroke="#3b82f6"
@@ -282,7 +284,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   d={stations.map((station, index) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${centerY + halfWidth}`;
+                    return `${index === 0 ? 'M' : 'L'} ${x} ${voraufmassCenterY + halfWidth}`;
                   }).join(' ')}
                   fill="none"
                   stroke="#3b82f6"
@@ -296,11 +298,11 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   d={`${stations.map((station, index) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
-                    return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
+                    return `${index === 0 ? 'M' : 'L'} ${x} ${voraufmassCenterY - halfWidth}`;
                   }).join(' ')} ${stations.slice().reverse().map((station) => {
                     const x = scaleX(station.station);
                     const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
-                    return `L ${x} ${centerY + halfWidth}`;
+                    return `L ${x} ${voraufmassCenterY + halfWidth}`;
                   }).join(' ')} Z`}
                   fill="rgba(59, 130, 246, 0.15)"
                   stroke="none"
@@ -314,7 +316,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                     <circle
                       key={`top-${station.id}`}
                       cx={x}
-                      cy={centerY - halfWidth}
+                      cy={voraufmassCenterY - halfWidth}
                       r={4 * zoomLevel}
                       fill="#3b82f6"
                       stroke="white"
@@ -331,7 +333,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                     <circle
                       key={`bottom-${station.id}`}
                       cx={x}
-                      cy={centerY + halfWidth}
+                      cy={voraufmassCenterY + halfWidth}
                       r={4 * zoomLevel}
                       fill="#3b82f6"
                       stroke="white"
@@ -342,8 +344,8 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
               </>
             )}
 
-            {/* Station markers and widths */}
-            {stations.map((station) => {
+            {/* Station markers and widths - only if Voraufmass is shown */}
+            {showVoraufmass && stations.map((station) => {
               const x = scaleX(station.station);
               const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
               const isHovered = hoveredStation === station.id;
@@ -354,7 +356,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Width representation (vertical bar) */}
                   <rect
                     x={x - 3}
-                    y={centerY - halfWidth}
+                    y={voraufmassCenterY - halfWidth}
                     width="6"
                     height={halfWidth * 2}
                     fill={isDragged ? "#3b82f6" : isHovered ? "#60a5fa" : "#94a3b8"}
@@ -369,7 +371,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Station point */}
                   <circle
                     cx={x}
-                    cy={centerY}
+                    cy={voraufmassCenterY}
                     r={4 * zoomLevel}
                     fill="#1e293b"
                     stroke="white"
@@ -379,7 +381,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Station label */}
                   <text
                     x={x}
-                    y={centerY + halfWidth + (20 * zoomLevel)}
+                    y={voraufmassCenterY + halfWidth + (20 * zoomLevel)}
                     textAnchor="middle"
                     className="fill-slate-600 font-medium"
                     fontSize={Math.max(12 * zoomLevel, 8)}
@@ -390,7 +392,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Width label */}
                   <text
                     x={x}
-                    y={centerY - halfWidth - (10 * zoomLevel)}
+                    y={voraufmassCenterY - halfWidth - (10 * zoomLevel)}
                     textAnchor="middle"
                     className="fill-slate-600 font-medium"
                     fontSize={Math.max(12 * zoomLevel, 8)}
@@ -404,7 +406,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                       {/* Delete button */}
                       <circle
                         cx={x + (15 * zoomLevel)}
-                        cy={centerY - halfWidth - (15 * zoomLevel)}
+                        cy={voraufmassCenterY - halfWidth - (15 * zoomLevel)}
                         r={12 * zoomLevel}
                         fill="#ef4444"
                         className="cursor-pointer hover:fill-red-600 transition-colors action-button"
@@ -416,18 +418,18 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                       >
                         <line
                           x1={x + (11 * zoomLevel)}
-                          y1={centerY - halfWidth - (19 * zoomLevel)}
+                          y1={voraufmassCenterY - halfWidth - (19 * zoomLevel)}
                           x2={x + (19 * zoomLevel)}
-                          y2={centerY - halfWidth - (11 * zoomLevel)}
+                          y2={voraufmassCenterY - halfWidth - (11 * zoomLevel)}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
                         />
                         <line
                           x1={x + (19 * zoomLevel)}
-                          y1={centerY - halfWidth - (19 * zoomLevel)}
+                          y1={voraufmassCenterY - halfWidth - (19 * zoomLevel)}
                           x2={x + (11 * zoomLevel)}
-                          y2={centerY - halfWidth - (11 * zoomLevel)}
+                          y2={voraufmassCenterY - halfWidth - (11 * zoomLevel)}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
@@ -437,24 +439,12 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                       {/* Edit indicator - dual direction arrows */}
                       <circle
                         cx={x - (15 * zoomLevel)}
-                        cy={centerY - halfWidth - (15 * zoomLevel)}
+                        cy={voraufmassCenterY - halfWidth - (15 * zoomLevel)}
                         r={12 * zoomLevel}
                         fill="#3b82f6"
                         className="cursor-move action-button"
                       />
-                      <g className="cursor-move action-button">
-                        {/* Horizontal arrow */}
-                        <line
-                          x1={x - (21 * zoomLevel)}
-                          y1={centerY - halfWidth - (15 * zoomLevel)}
-                          x2={x - (9 * zoomLevel)}
-                          y2={centerY - halfWidth - (15 * zoomLevel)}
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        {/* Arrow heads and vertical arrow scaled with zoom */}
-                      </g>
+                      {/* Arrow details simplified for space */}
                     </g>
                   )}
                 </g>
