@@ -189,7 +189,7 @@ const LayerManager = ({ layers, onLayersChange, onClose }) => {
                           />
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground">Dichte (kg/m³)</Label>
+                          <Label className="text-xs text-muted-foreground">Dichte (g/cm³)</Label>
                           <Input
                             type="number"
                             step="0.1"
@@ -199,10 +199,10 @@ const LayerManager = ({ layers, onLayersChange, onClose }) => {
                           />
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground">Dicke (m)</Label>
+                          <Label className="text-xs text-muted-foreground">Dicke (cm)</Label>
                           <Input
                             type="number"
-                            step="0.01"
+                            step="1"
                             value={layer.dicke}
                             onChange={(e) => updateLayer(layer.id, 'dicke', e.target.value)}
                             className="mt-1 h-8"
