@@ -26,6 +26,7 @@ const MeasurementInterface = () => {
   const [pointsOfInterest, setPointsOfInterest] = useState([]); // Points of interest
   const [newPOI, setNewPOI] = useState({ station: '', name: '', type: 'Beginn' }); // New point of interest
   const [showMapModal, setShowMapModal] = useState(false); // Map modal visibility
+  const [showGeofenceModal, setShowGeofenceModal] = useState(false); // Geofence modal visibility
   const [editingPOI, setEditingPOI] = useState(null); // POI being edited
   const [geofences, setGeofences] = useState([]); // Geofences
   const { toast } = useToast();
