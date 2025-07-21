@@ -215,7 +215,7 @@ const MeasurementInterface = () => {
           </CardContent>
         </Card>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6" style={{ marginTop: isGraphicsFixed ? '28vh' : '0' }}>
           {/* Stations List - 66% width */}
           <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm lg:col-span-2">
             <CardHeader>
