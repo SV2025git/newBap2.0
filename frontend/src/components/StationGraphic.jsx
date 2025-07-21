@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Trash2, Edit3 } from 'lucide-react';
+import { Button } from './ui/button';
 
-const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
+const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStationUpdate, onStationDelete, onSectionToggle }) => {
   const [hoveredStation, setHoveredStation] = useState(null);
   const [draggedStation, setDraggedStation] = useState(null);
   const [dragStartY, setDragStartY] = useState(0);
@@ -12,9 +13,11 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
 
   // Calculate dimensions
   const svgWidth = 800;
-  const svgHeight = 400;
+  const baseHeight = 400;
+  const layerHeight = layers.length * 80; // 80px per layer
+  const svgHeight = baseHeight + layerHeight;
   const margin = 50;
-  const centerY = svgHeight / 2;
+  const centerY = 200; // Fixed center for main profile
   
   // Find min/max stations for scaling
   const minStation = stations.length > 0 ? Math.min(...stations.map(s => s.station)) : 0;
@@ -91,11 +94,23 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
     }
   }, [draggedStation, dragStartY, dragStartWidth, dragStartX, dragStartStation]);
 
+  // Calculate area between two stations (trapezoidal area)
+  const calculateSectionArea = (station1, station2) => {
+    const distance = Math.abs(station2.station - station1.station);
+    const avgWidth = (station1.width + station2.width) / 2;
+    return distance * avgWidth;
+  };
+
+  // Color palette for layers
+  const layerColors = [
+    '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
+  ];
+
   return (
     <div className="w-full bg-white rounded-lg border overflow-hidden">
       <div className="p-4 bg-slate-50 border-b">
         <h3 className="font-medium text-sm text-muted-foreground">
-          2D Querschnitt - Interaktiv (Horizontal ziehen = Station verschieben, Vertikal ziehen = Breite anpassen)
+          2D Querschnitt mit Schichten - Interaktiv (Horizontal ziehen = Station verschieben, Vertikal ziehen = Breite anpassen)
         </h3>
       </div>
       
@@ -130,6 +145,84 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
               strokeWidth="2"
               strokeDasharray="5,5"
             />
+
+            {/* Layer visualization */}
+            {layers.map((layer, layerIndex) => {
+              const layerY = centerY + 50 + (layerIndex * 80);
+              const layerThickness = layer.dicke * 100; // Scale thickness for visualization
+              const layerColor = layerColors[layerIndex % layerColors.length];
+              
+              return (
+                <g key={layer.id}>
+                  {/* Layer label */}
+                  <text
+                    x={10}
+                    y={layerY + layerThickness / 2 + 5}
+                    className="text-xs fill-slate-600 font-medium"
+                  >
+                    {layer.name} ({layer.dicke}m)
+                  </text>
+                  
+                  {/* Layer sections between stations */}
+                  {stations.slice(0, -1).map((station, stationIndex) => {
+                    const nextStation = stations[stationIndex + 1];
+                    const sectionKey = `${station.id}-${nextStation.id}`;
+                    const isActive = sectionActivation[layer.id]?.[sectionKey];
+                    
+                    const x1 = scaleX(station.station);
+                    const x2 = scaleX(nextStation.station);
+                    const width1 = station.width * 20;
+                    const width2 = nextStation.width * 20;
+                    
+                    return (
+                      <g key={sectionKey}>
+                        {/* Layer section rectangle */}
+                        <path
+                          d={`M ${x1 - width1/2} ${layerY} 
+                              L ${x2 - width2/2} ${layerY}
+                              L ${x2 + width2/2} ${layerY + layerThickness}
+                              L ${x1 + width1/2} ${layerY + layerThickness} Z`}
+                          fill={isActive ? layerColor : '#e2e8f0'}
+                          fillOpacity={isActive ? 0.8 : 0.3}
+                          stroke={layerColor}
+                          strokeWidth="2"
+                          className="cursor-pointer transition-all duration-200"
+                          onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
+                        />
+                        
+                        {/* Section activation button */}
+                        <circle
+                          cx={(x1 + x2) / 2}
+                          cy={layerY + layerThickness / 2}
+                          r="8"
+                          fill={isActive ? layerColor : '#94a3b8'}
+                          className="cursor-pointer"
+                          onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
+                        />
+                        <text
+                          x={(x1 + x2) / 2}
+                          y={layerY + layerThickness / 2 + 3}
+                          textAnchor="middle"
+                          className="text-xs fill-white font-bold cursor-pointer pointer-events-none"
+                        >
+                          {isActive ? '✓' : '○'}
+                        </text>
+                        
+                        {/* Area display */}
+                        <text
+                          x={(x1 + x2) / 2}
+                          y={layerY + layerThickness + 15}
+                          textAnchor="middle"
+                          className="text-xs fill-slate-600"
+                        >
+                          {isActive ? `${calculateSectionArea(station, nextStation).toFixed(1)}m²` : '-'}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              );
+            })}
             
             {/* Profile lines connecting station tops and bottoms */}
             {stations.length > 1 && (
