@@ -28,6 +28,38 @@ const MeasurementInterface = () => {
   const [geofences, setGeofences] = useState([]); // Geofences
   const { toast } = useToast();
 
+  const addPointOfInterest = () => {
+    if (!newPOI.station || !newPOI.name) {
+      toast({
+        title: "Fehler",
+        description: "Bitte Station und Name eingeben",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const poi = {
+      id: Date.now(),
+      station: parseFloat(newPOI.station),
+      name: newPOI.name
+    };
+
+    setPointsOfInterest(prev => [...prev, poi].sort((a, b) => a.station - b.station));
+    setNewPOI({ station: '', name: '' });
+    toast({
+      title: "Point of Interest hinzugefügt",
+      description: `${poi.name} bei Station ${poi.station}m wurde hinzugefügt`
+    });
+  };
+
+  const deletePointOfInterest = (id) => {
+    setPointsOfInterest(prev => prev.filter(p => p.id !== id));
+    toast({
+      title: "Point of Interest gelöscht",
+      description: "Point of Interest wurde erfolgreich entfernt"
+    });
+  };
+
   // Initialize section activation when stations or layers change - DEFAULT ALL ACTIVE
   useEffect(() => {
     const newSectionActivation = { ...sectionActivation };
