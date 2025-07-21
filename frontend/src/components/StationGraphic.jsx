@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Trash2, Edit3 } from 'lucide-react';
 import { Button } from './ui/button';
 
-const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLevel = 1, showVoraufmass = true, showSchichten = true, pointsOfInterest = [], onStationUpdate, onStationDelete, onSectionToggle }) => {
+const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLevel = 1, showVoraufmass = true, showSchichten = true, showPOI = true, pointsOfInterest = [], poiTypes = {}, onStationUpdate, onStationDelete, onSectionToggle }) => {
   const [hoveredStation, setHoveredStation] = useState(null);
   const [draggedStation, setDraggedStation] = useState(null);
   const [dragStartY, setDragStartY] = useState(0);
