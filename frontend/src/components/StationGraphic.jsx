@@ -150,9 +150,9 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
             {layers.map((layer, layerIndex) => {
               // Calculate cumulative thickness from bottom up
               const layersBelow = layers.slice(0, layerIndex);
-              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + (l.dicke * 100), 0);
-              const layerStartY = centerY + 50 + cumulativeThickness; // Start position for this layer
-              const layerThickness = layer.dicke * 100; // Scale thickness for visualization
+              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 100, 30), 0); // Minimum 30px height
+              const layerStartY = centerY + 120 + cumulativeThickness; // More space from initial measurement (120px instead of 50px)
+              const layerThickness = Math.max(layer.dicke * 100, 30); // Minimum 30px thickness to fit checkbox
               const layerColor = layerColors[layerIndex % layerColors.length];
               
               return (
@@ -197,20 +197,20 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                           onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
                         />
                         
-                        {/* Section activation button */}
+                        {/* Section activation button - larger radius for better fit */}
                         <circle
                           cx={(x1 + x2) / 2}
                           cy={layerStartY + layerThickness / 2}
-                          r="8"
+                          r="10"
                           fill={isActive ? layerColor : '#94a3b8'}
                           className="cursor-pointer"
                           onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
                         />
                         <text
                           x={(x1 + x2) / 2}
-                          y={layerStartY + layerThickness / 2 + 3}
+                          y={layerStartY + layerThickness / 2 + 4}
                           textAnchor="middle"
-                          className="text-xs fill-white font-bold cursor-pointer pointer-events-none"
+                          className="text-sm fill-white font-bold cursor-pointer pointer-events-none"
                         >
                           {isActive ? '✓' : '○'}
                         </text>
