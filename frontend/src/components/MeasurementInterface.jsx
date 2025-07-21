@@ -131,8 +131,8 @@ const MeasurementInterface = () => {
           </div>
         </div>
 
-        {/* Station Graphic with Layers */}
-        <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+        {/* Station Graphic with Layers - Limited to 25% height */}
+        <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm" style={{ maxHeight: '25vh' }}>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Grafische Darstellung mit Schichten
@@ -141,7 +141,7 @@ const MeasurementInterface = () => {
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent style={{ maxHeight: 'calc(25vh - 80px)', overflowY: 'auto' }}>
             <StationGraphic 
               stations={stations} 
               layers={layers}
@@ -154,86 +154,164 @@ const MeasurementInterface = () => {
         </Card>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Station Input Form */}
-          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Neue Station hinzufügen</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <Label htmlFor="station">Station (m)</Label>
-                  <Input
-                    id="station"
-                    type="number"
-                    step="0.1"
-                    value={newStation.station}
-                    onChange={(e) => setNewStation(prev => ({ ...prev, station: e.target.value }))}
-                    placeholder="0.0"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="width">Breite (m)</Label>
-                  <Input
-                    id="width"
-                    type="number"
-                    step="0.1"
-                    value={newStation.width}
-                    onChange={(e) => setNewStation(prev => ({ ...prev, width: e.target.value }))}
-                    placeholder="0.0"
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-              <Button onClick={addStation} className="w-full flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                Station hinzufügen
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Layer Management */}
-          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+          {/* Stations List - 66% width */}
+          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                Schichten verwalten
+                Stationsliste
                 <Button 
                   onClick={() => setShowLayerManager(true)}
                   variant="outline"
                   size="sm"
+                  className="flex items-center gap-2"
                 >
-                  Schichten bearbeiten
+                  Material
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {layers.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  Noch keine Schichten vorhanden
+              {stations.length === 0 ? (
+                <p className="text-center py-8 text-muted-foreground">
+                  Keine Stationen vorhanden. Fügen Sie eine neue Station hinzu.
                 </p>
               ) : (
-                <div className="space-y-2">
-                  {layers.map((layer, index) => (
-                    <div key={layer.id} className="p-3 bg-slate-50 rounded-lg">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="font-medium">{layer.name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            Dicke: {layer.dicke}cm | 
-                            Einbaugewicht: {layer.einbaugewicht} kg/m²
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-3">Station (m)</th>
+                        <th className="text-left p-3">Breite (m)</th>
+                        <th className="text-right p-3">Aktionen</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stations.map((station) => (
+                        <tr key={station.id} className="border-b hover:bg-slate-50/50 transition-colors">
+                          <td className="p-3">
+                            {editingId === station.id ? (
+                              <Input
+                                type="number"
+                                step="0.1"
+                                value={station.station}
+                                onChange={(e) => updateStation(station.id, 'station', e.target.value)}
+                                onBlur={() => setEditingId(null)}
+                                className="w-24"
+                                autoFocus
+                              />
+                            ) : (
+                              <span 
+                                onClick={() => setEditingId(station.id)}
+                                className="cursor-pointer hover:text-blue-600 transition-colors"
+                              >
+                                {station.station.toFixed(1)}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            {editingId === station.id ? (
+                              <Input
+                                type="number"
+                                step="0.1"
+                                value={station.width}
+                                onChange={(e) => updateStation(station.id, 'width', e.target.value)}
+                                onBlur={() => setEditingId(null)}
+                                className="w-24"
+                              />
+                            ) : (
+                              <span 
+                                onClick={() => setEditingId(station.id)}
+                                className="cursor-pointer hover:text-blue-600 transition-colors"
+                              >
+                                {station.width.toFixed(1)}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  // Add new station after current one
+                                  const currentIndex = stations.findIndex(s => s.id === station.id);
+                                  const newStationValue = station.station + 5; // 5m after current
+                                  const newStation = {
+                                    id: Date.now(),
+                                    station: newStationValue,
+                                    width: station.width // Same width as current
+                                  };
+                                  setStations(prev => [...prev, newStation].sort((a, b) => a.station - b.station));
+                                  toast({
+                                    title: "Station hinzugefügt",
+                                    description: `Neue Station ${newStationValue.toFixed(1)}m wurde hinzugefügt`
+                                  });
+                                }}
+                                className="text-green-600 hover:text-green-700"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setEditingId(station.id)}
+                                className="text-blue-600 hover:text-blue-700"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteStation(station.id)}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {/* Add new station row */}
+                      <tr className="border-b bg-slate-50/30">
+                        <td className="p-3">
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={newStation.station}
+                            onChange={(e) => setNewStation(prev => ({ ...prev, station: e.target.value }))}
+                            placeholder="Station (m)"
+                            className="w-full"
+                          />
+                        </td>
+                        <td className="p-3">
+                          <Input
+                            type="number"
+                            step="0.1"
+                            value={newStation.width}
+                            onChange={(e) => setNewStation(prev => ({ ...prev, width: e.target.value }))}
+                            placeholder="Breite (m)"
+                            className="w-full"
+                          />
+                        </td>
+                        <td className="p-3">
+                          <Button
+                            onClick={addStation}
+                            size="sm"
+                            className="flex items-center gap-2"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Hinzufügen
+                          </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Material Calculation */}
-          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+          {/* Material Calculation - 33% width */}
+          <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm lg:col-span-1">
             <CardHeader>
               <CardTitle>Materialberechnung</CardTitle>
             </CardHeader>
@@ -246,97 +324,6 @@ const MeasurementInterface = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Stations List */}
-        <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle>Stationsliste</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {stations.length === 0 ? (
-              <p className="text-center py-8 text-muted-foreground">
-                Keine Stationen vorhanden. Fügen Sie eine neue Station hinzu.
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-3">Station (m)</th>
-                      <th className="text-left p-3">Breite (m)</th>
-                      <th className="text-right p-3">Aktionen</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stations.map((station) => (
-                      <tr key={station.id} className="border-b hover:bg-slate-50/50 transition-colors">
-                        <td className="p-3">
-                          {editingId === station.id ? (
-                            <Input
-                              type="number"
-                              step="0.1"
-                              value={station.station}
-                              onChange={(e) => updateStation(station.id, 'station', e.target.value)}
-                              onBlur={() => setEditingId(null)}
-                              className="w-24"
-                              autoFocus
-                            />
-                          ) : (
-                            <span 
-                              onClick={() => setEditingId(station.id)}
-                              className="cursor-pointer hover:text-blue-600 transition-colors"
-                            >
-                              {station.station.toFixed(1)}
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          {editingId === station.id ? (
-                            <Input
-                              type="number"
-                              step="0.1"
-                              value={station.width}
-                              onChange={(e) => updateStation(station.id, 'width', e.target.value)}
-                              onBlur={() => setEditingId(null)}
-                              className="w-24"
-                            />
-                          ) : (
-                            <span 
-                              onClick={() => setEditingId(station.id)}
-                              className="cursor-pointer hover:text-blue-600 transition-colors"
-                            >
-                              {station.width.toFixed(1)}
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setEditingId(station.id)}
-                              className="text-blue-600 hover:text-blue-700"
-                            >
-                              <Edit3 className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteStation(station.id)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {showLayerManager && (
           <LayerManager
