@@ -20,7 +20,7 @@ const MeasurementInterface = () => {
   const [sectionActivation, setSectionActivation] = useState({}); // Track which sections are active for each layer
   const { toast } = useToast();
 
-  // Initialize section activation when stations or layers change
+  // Initialize section activation when stations or layers change - DEFAULT ALL ACTIVE
   useEffect(() => {
     const newSectionActivation = { ...sectionActivation };
     
@@ -33,7 +33,7 @@ const MeasurementInterface = () => {
       for (let i = 0; i < stations.length - 1; i++) {
         const sectionKey = `${stations[i].id}-${stations[i + 1].id}`;
         if (newSectionActivation[layer.id][sectionKey] === undefined) {
-          newSectionActivation[layer.id][sectionKey] = false; // Default to inactive
+          newSectionActivation[layer.id][sectionKey] = true; // Default to ACTIVE
         }
       }
     });
