@@ -135,10 +135,14 @@ const MeasurementInterface = () => {
         </div>
 
         {/* Station Graphic with Layers - Limited to 25% height */}
-        <Card className="shadow-lg border-0 bg-white/70 backdrop-blur-sm" style={{ maxHeight: '25vh' }}>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Grafische Darstellung mit Schichten
+        <Card 
+          className={`shadow-lg border-0 bg-white/70 backdrop-blur-sm transition-all duration-300 ${
+            isGraphicsFixed ? 'fixed top-4 left-4 right-4 z-10' : ''
+          }`} 
+          style={{ maxHeight: '25vh' }}
+        >
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Button
@@ -179,13 +183,24 @@ const MeasurementInterface = () => {
                     <span className="text-lg font-bold">+</span>
                   </Button>
                 </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsGraphicsFixed(!isGraphicsFixed)}
+                  className="flex items-center gap-2"
+                >
+                  {isGraphicsFixed ? '📌' : '📍'}
+                  {isGraphicsFixed ? 'Lösen' : 'Fixieren'}
+                </Button>
                 <div className="text-sm font-normal text-muted-foreground">
-                  Stationen: {stations.length} | Gesamt: {stations.reduce((sum, s) => sum + s.width, 0).toFixed(2)}m
+                  Stationen: {stations.length}
                 </div>
               </div>
-            </CardTitle>
+            </div>
           </CardHeader>
-          <CardContent style={{ maxHeight: 'calc(25vh - 80px)', overflowY: 'auto' }}>
+          <CardContent style={{ maxHeight: 'calc(25vh - 60px)', overflowY: 'auto' }}>
             <StationGraphic 
               stations={stations} 
               layers={layers}
