@@ -110,12 +110,6 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
 
   return (
     <div className="w-full bg-white rounded-lg border overflow-hidden">
-      <div className="p-4 bg-slate-50 border-b">
-        <h3 className="font-medium text-sm text-muted-foreground">
-          2D Querschnitt mit Schichten - Interaktiv (Horizontal ziehen = Station verschieben, Vertikal ziehen = Breite anpassen)
-        </h3>
-      </div>
-      
       <div className="p-4">
         {stations.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-muted-foreground">
