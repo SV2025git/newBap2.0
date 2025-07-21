@@ -220,7 +220,7 @@ const MeasurementInterface = () => {
                         <div>
                           <h4 className="font-medium">{layer.name}</h4>
                           <p className="text-sm text-muted-foreground">
-                            Dicke: {layer.dicke}m | 
+                            Dicke: {layer.dicke}cm | 
                             Einbaugewicht: {layer.einbaugewicht} kg/m²
                           </p>
                         </div>
