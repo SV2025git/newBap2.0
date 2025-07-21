@@ -131,6 +131,58 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
             
+            {/* Points of Interest - shown above initial measurement */}
+            {pointsOfInterest.map((poi) => {
+              const x = scaleX(poi.station);
+              const poiY = showVoraufmass ? voraufmassCenterY - (120 * zoomLevel) : 50 * zoomLevel; // Above the initial measurement
+              
+              return (
+                <g key={poi.id}>
+                  {/* POI marker */}
+                  <circle
+                    cx={x}
+                    cy={poiY}
+                    r={8 * zoomLevel}
+                    fill="#ff6b35"
+                    stroke="white"
+                    strokeWidth="2"
+                    className="drop-shadow"
+                  />
+                  {/* POI icon */}
+                  <text
+                    x={x}
+                    y={poiY + (3 * zoomLevel)}
+                    textAnchor="middle"
+                    className="fill-white font-bold pointer-events-none"
+                    fontSize={Math.max(10 * zoomLevel, 8)}
+                  >
+                    📍
+                  </text>
+                  {/* POI label */}
+                  <text
+                    x={x}
+                    y={poiY - (15 * zoomLevel)}
+                    textAnchor="middle"
+                    className="fill-orange-600 font-bold text-xs"
+                    fontSize={Math.max(10 * zoomLevel, 8)}
+                  >
+                    {poi.name}
+                  </text>
+                  {/* Station line from POI to measurement */}
+                  <line
+                    x1={x}
+                    y1={poiY + (8 * zoomLevel)}
+                    x2={x}
+                    y2={showVoraufmass ? voraufmassCenterY - (60 * zoomLevel) : layerStartY}
+                    stroke="#ff6b35"
+                    strokeWidth="1"
+                    strokeDasharray="3,3"
+                    opacity="0.7"
+                  />
+                </g>
+              );
+            })}
+
             {/* Center line */}
             {showVoraufmass && (
               <line
