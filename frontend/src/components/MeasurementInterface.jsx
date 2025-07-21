@@ -22,6 +22,10 @@ const MeasurementInterface = () => {
   const [showVoraufmass, setShowVoraufmass] = useState(true); // Show initial measurement
   const [showSchichten, setShowSchichten] = useState(true); // Show layers
   const [isGraphicsFixed, setIsGraphicsFixed] = useState(false); // Fixed position toggle
+  const [pointsOfInterest, setPointsOfInterest] = useState([]); // Points of interest
+  const [newPOI, setNewPOI] = useState({ station: '', name: '' }); // New point of interest
+  const [showMap, setShowMap] = useState(false); // Map visibility
+  const [geofences, setGeofences] = useState([]); // Geofences
   const { toast } = useToast();
 
   // Initialize section activation when stations or layers change - DEFAULT ALL ACTIVE
