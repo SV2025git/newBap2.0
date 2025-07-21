@@ -24,5 +24,13 @@ export const mockLayers = [
     dichte: 2400,
     dicke: 0.08,
     einbaugewicht: 192.0
+  },
+  {
+    id: 3,
+    name: "Schottertragschicht", 
+    rezept: "STS 0/32",
+    dichte: 2200,
+    dicke: 0.20,
+    einbaugewicht: 440.0
   }
 ];
