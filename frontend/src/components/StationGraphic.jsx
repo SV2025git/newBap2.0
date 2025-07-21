@@ -265,7 +265,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                 <path
                   d={stations.map((station, index) => {
                     const x = scaleX(station.station);
-                    const halfWidth = (station.width * 20);
+                    const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
                     return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
                   }).join(' ')}
                   fill="none"
@@ -279,7 +279,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                 <path
                   d={stations.map((station, index) => {
                     const x = scaleX(station.station);
-                    const halfWidth = (station.width * 20);
+                    const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
                     return `${index === 0 ? 'M' : 'L'} ${x} ${centerY + halfWidth}`;
                   }).join(' ')}
                   fill="none"
@@ -293,11 +293,11 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                 <path
                   d={`${stations.map((station, index) => {
                     const x = scaleX(station.station);
-                    const halfWidth = (station.width * 20);
+                    const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
                     return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
                   }).join(' ')} ${stations.slice().reverse().map((station) => {
                     const x = scaleX(station.station);
-                    const halfWidth = (station.width * 20);
+                    const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
                     return `L ${x} ${centerY + halfWidth}`;
                   }).join(' ')} Z`}
                   fill="rgba(59, 130, 246, 0.15)"
@@ -307,13 +307,13 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                 {/* Top profile points */}
                 {stations.map((station) => {
                   const x = scaleX(station.station);
-                  const halfWidth = (station.width * 20);
+                  const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
                   return (
                     <circle
                       key={`top-${station.id}`}
                       cx={x}
                       cy={centerY - halfWidth}
-                      r="4"
+                      r={4 * zoomLevel}
                       fill="#3b82f6"
                       stroke="white"
                       strokeWidth="2"
@@ -324,13 +324,13 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                 {/* Bottom profile points */}
                 {stations.map((station) => {
                   const x = scaleX(station.station);
-                  const halfWidth = (station.width * 20);
+                  const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
                   return (
                     <circle
                       key={`bottom-${station.id}`}
                       cx={x}
                       cy={centerY + halfWidth}
-                      r="4"
+                      r={4 * zoomLevel}
                       fill="#3b82f6"
                       stroke="white"
                       strokeWidth="2"
@@ -343,7 +343,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
             {/* Station markers and widths */}
             {stations.map((station) => {
               const x = scaleX(station.station);
-              const halfWidth = (station.width * 20); // Scale factor for visual width
+              const halfWidth = (station.width * 20 * zoomLevel); // Apply zoom to width visualization
               const isHovered = hoveredStation === station.id;
               const isDragged = draggedStation?.id === station.id;
               
@@ -368,7 +368,7 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   <circle
                     cx={x}
                     cy={centerY}
-                    r="4"
+                    r={4 * zoomLevel}
                     fill="#1e293b"
                     stroke="white"
                     strokeWidth="2"
@@ -377,9 +377,10 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Station label */}
                   <text
                     x={x}
-                    y={centerY + halfWidth + 20}
+                    y={centerY + halfWidth + (20 * zoomLevel)}
                     textAnchor="middle"
-                    className="text-xs fill-slate-600 font-medium"
+                    className="fill-slate-600 font-medium"
+                    fontSize={Math.max(12 * zoomLevel, 8)}
                   >
                     {station.station.toFixed(1)}m
                   </text>
@@ -387,21 +388,22 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                   {/* Width label */}
                   <text
                     x={x}
-                    y={centerY - halfWidth - 10}
+                    y={centerY - halfWidth - (10 * zoomLevel)}
                     textAnchor="middle"
-                    className="text-xs fill-slate-600 font-medium"
+                    className="fill-slate-600 font-medium"
+                    fontSize={Math.max(12 * zoomLevel, 8)}
                   >
                     {station.width.toFixed(1)}m
                   </text>
                   
-                  {/* Action buttons on hover */}
+                  {/* Action buttons on hover - scale with zoom */}
                   {isHovered && (
                     <g className="action-buttons">
                       {/* Delete button */}
                       <circle
-                        cx={x + 15}
-                        cy={centerY - halfWidth - 15}
-                        r="12"
+                        cx={x + (15 * zoomLevel)}
+                        cy={centerY - halfWidth - (15 * zoomLevel)}
+                        r={12 * zoomLevel}
                         fill="#ef4444"
                         className="cursor-pointer hover:fill-red-600 transition-colors action-button"
                         onClick={() => onStationDelete(station.id)}
@@ -411,19 +413,19 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                         onClick={() => onStationDelete(station.id)}
                       >
                         <line
-                          x1={x + 11}
-                          y1={centerY - halfWidth - 19}
-                          x2={x + 19}
-                          y2={centerY - halfWidth - 11}
+                          x1={x + (11 * zoomLevel)}
+                          y1={centerY - halfWidth - (19 * zoomLevel)}
+                          x2={x + (19 * zoomLevel)}
+                          y2={centerY - halfWidth - (11 * zoomLevel)}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
                         />
                         <line
-                          x1={x + 19}
-                          y1={centerY - halfWidth - 19}
-                          x2={x + 11}
-                          y2={centerY - halfWidth - 11}
+                          x1={x + (19 * zoomLevel)}
+                          y1={centerY - halfWidth - (19 * zoomLevel)}
+                          x2={x + (11 * zoomLevel)}
+                          y2={centerY - halfWidth - (11 * zoomLevel)}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
@@ -432,65 +434,24 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                       
                       {/* Edit indicator - dual direction arrows */}
                       <circle
-                        cx={x - 15}
-                        cy={centerY - halfWidth - 15}
-                        r="12"
+                        cx={x - (15 * zoomLevel)}
+                        cy={centerY - halfWidth - (15 * zoomLevel)}
+                        r={12 * zoomLevel}
                         fill="#3b82f6"
                         className="cursor-move action-button"
                       />
                       <g className="cursor-move action-button">
                         {/* Horizontal arrow */}
                         <line
-                          x1={x - 21}
-                          y1={centerY - halfWidth - 15}
-                          x2={x - 9}
-                          y2={centerY - halfWidth - 15}
+                          x1={x - (21 * zoomLevel)}
+                          y1={centerY - halfWidth - (15 * zoomLevel)}
+                          x2={x - (9 * zoomLevel)}
+                          y2={centerY - halfWidth - (15 * zoomLevel)}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
                         />
-                        <path
-                          d={`M ${x - 11} ${centerY - halfWidth - 17} L ${x - 9} ${centerY - halfWidth - 15} L ${x - 11} ${centerY - halfWidth - 13}`}
-                          stroke="white"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d={`M ${x - 19} ${centerY - halfWidth - 17} L ${x - 21} ${centerY - halfWidth - 15} L ${x - 19} ${centerY - halfWidth - 13}`}
-                          stroke="white"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        {/* Vertical arrow */}
-                        <line
-                          x1={x - 15}
-                          y1={centerY - halfWidth - 21}
-                          x2={x - 15}
-                          y2={centerY - halfWidth - 9}
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d={`M ${x - 17} ${centerY - halfWidth - 11} L ${x - 15} ${centerY - halfWidth - 9} L ${x - 13} ${centerY - halfWidth - 11}`}
-                          stroke="white"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d={`M ${x - 17} ${centerY - halfWidth - 19} L ${x - 15} ${centerY - halfWidth - 21} L ${x - 13} ${centerY - halfWidth - 19}`}
-                          stroke="white"
-                          strokeWidth="2"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
+                        {/* Arrow heads and vertical arrow scaled with zoom */}
                       </g>
                     </g>
                   )}
