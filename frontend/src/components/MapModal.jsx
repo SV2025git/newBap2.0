@@ -153,7 +153,7 @@ const MapModal = ({ isOpen, onClose, pointsOfInterest, onAddPOI, poiTypes }) => 
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm rounded-lg p-4 shadow-lg border flex gap-4">
             <Button
               onClick={handleOK}
-              disabled={!selectedPosition || !newPOI.name}
+              disabled={!selectedPosition}
               className="px-6"
             >
               OK
