@@ -55,15 +55,22 @@ const MeasurementInterface = () => {
     const poi = {
       id: Date.now(),
       station: parseFloat(newPOI.station),
-      name: newPOI.name
+      name: newPOI.name,
+      type: newPOI.type || 'Beginn'
     };
 
     setPointsOfInterest(prev => [...prev, poi].sort((a, b) => a.station - b.station));
-    setNewPOI({ station: '', name: '' });
+    setNewPOI({ station: '', name: '', type: 'Beginn' });
     toast({
       title: "Point of Interest hinzugefügt",
       description: `${poi.name} bei Station ${poi.station}m wurde hinzugefügt`
     });
+  };
+
+  const updatePointOfInterest = (id, field, value) => {
+    setPointsOfInterest(prev => prev.map(p => 
+      p.id === id ? { ...p, [field]: field === 'station' ? parseFloat(value) : value } : p
+    ).sort((a, b) => a.station - b.station));
   };
 
   const deletePointOfInterest = (id) => {
