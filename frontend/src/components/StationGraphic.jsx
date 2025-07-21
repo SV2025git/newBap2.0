@@ -89,7 +89,7 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [draggedStation, dragStartY, dragStartWidth]);
+  }, [draggedStation, dragStartY, dragStartWidth, dragStartX, dragStartStation]);
 
   return (
     <div className="w-full bg-white rounded-lg border overflow-hidden">
