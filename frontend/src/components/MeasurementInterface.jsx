@@ -137,8 +137,31 @@ const MeasurementInterface = () => {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Grafische Darstellung mit Schichten
-              <div className="text-sm font-normal text-muted-foreground">
-                Stationen: {stations.length} | Gesamt: {stations.reduce((sum, s) => sum + s.width, 0).toFixed(2)}m
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setZoomLevel(prev => Math.max(0.2, prev - 0.1))}
+                    className="px-2"
+                  >
+                    <span className="text-lg font-bold">-</span>
+                  </Button>
+                  <span className="text-xs text-muted-foreground min-w-16 text-center">
+                    {Math.round(zoomLevel * 100)}%
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setZoomLevel(prev => Math.min(1.5, prev + 0.1))}
+                    className="px-2"
+                  >
+                    <span className="text-lg font-bold">+</span>
+                  </Button>
+                </div>
+                <div className="text-sm font-normal text-muted-foreground">
+                  Stationen: {stations.length} | Gesamt: {stations.reduce((sum, s) => sum + s.width, 0).toFixed(2)}m
+                </div>
               </div>
             </CardTitle>
           </CardHeader>
@@ -147,6 +170,7 @@ const MeasurementInterface = () => {
               stations={stations} 
               layers={layers}
               sectionActivation={sectionActivation}
+              zoomLevel={zoomLevel}
               onStationUpdate={updateStation}
               onStationDelete={deleteStation}
               onSectionToggle={toggleSectionActivation}
