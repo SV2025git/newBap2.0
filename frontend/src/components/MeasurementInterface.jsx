@@ -142,6 +142,24 @@ const MeasurementInterface = () => {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Button
+                    variant={showVoraufmass ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowVoraufmass(!showVoraufmass)}
+                    className="px-3"
+                  >
+                    Voraufmaß
+                  </Button>
+                  <Button
+                    variant={showSchichten ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowSchichten(!showSchichten)}
+                    className="px-3"
+                  >
+                    Schichten
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setZoomLevel(prev => Math.max(0.2, prev - 0.1))}
