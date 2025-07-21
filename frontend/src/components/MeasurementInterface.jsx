@@ -659,16 +659,17 @@ const MeasurementInterface = () => {
             onClose={() => setShowMapModal(false)}
             pointsOfInterest={pointsOfInterest}
             onAddPOI={(poi) => {
+              const poiName = poi.name || `${poiTypes[poi.type]} ${poi.type}`;
               const newPoi = {
                 id: Date.now(),
                 station: poi.station,
-                name: poi.name,
+                name: poiName,
                 type: poi.type
               };
               setPointsOfInterest(prev => [...prev, newPoi].sort((a, b) => a.station - b.station));
               toast({
                 title: "POI von Karte hinzugefügt",
-                description: `${poi.name} bei Station ${poi.station.toFixed(1)}m wurde hinzugefügt`
+                description: `${poiName} bei Station ${poi.station.toFixed(1)}m wurde hinzugefügt`
               });
             }}
             poiTypes={poiTypes}
