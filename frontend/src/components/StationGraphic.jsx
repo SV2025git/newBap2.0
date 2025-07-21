@@ -6,6 +6,8 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
   const [draggedStation, setDraggedStation] = useState(null);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragStartWidth, setDragStartWidth] = useState(0);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragStartStation, setDragStartStation] = useState(0);
   const svgRef = useRef(null);
 
   // Calculate dimensions
