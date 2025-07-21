@@ -13,24 +13,24 @@ export const mockLayers = [
     id: 1,
     name: "Asphaltdeckschicht",
     rezept: "AC 11 D S",
-    dichte: 2300,
-    dicke: 0.04,
-    einbaugewicht: 92.0
+    dichte: 2.3, // g/cm³
+    dicke: 4, // cm
+    einbaugewicht: 92.0 // kg/m²
   },
   {
     id: 2,
     name: "Asphalttragschicht", 
     rezept: "AC 22 T S",
-    dichte: 2400,
-    dicke: 0.08,
-    einbaugewicht: 192.0
+    dichte: 2.4, // g/cm³
+    dicke: 8, // cm
+    einbaugewicht: 192.0 // kg/m²
   },
   {
     id: 3,
     name: "Schottertragschicht", 
     rezept: "STS 0/32",
-    dichte: 2200,
-    dicke: 0.20,
-    einbaugewicht: 440.0
+    dichte: 2.2, // g/cm³
+    dicke: 20, // cm
+    einbaugewicht: 440.0 // kg/m²
   }
 ];
