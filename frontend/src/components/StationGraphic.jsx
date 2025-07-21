@@ -146,14 +146,18 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
               strokeDasharray="5,5"
             />
 
-            {/* Layer visualization - stacked sandwich style */}
+            {/* Layer visualization - rectangular blocks with uniform height */}
             {layers.map((layer, layerIndex) => {
               // Calculate cumulative thickness from bottom up
               const layersBelow = layers.slice(0, layerIndex);
-              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 100, 30), 0); // Minimum 30px height
-              const layerStartY = centerY + 120 + cumulativeThickness; // More space from initial measurement (120px instead of 50px)
-              const layerThickness = Math.max(layer.dicke * 100, 30); // Minimum 30px thickness to fit checkbox
+              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 2, 25), 0); // Dicke in cm, minimum 25px
+              const layerStartY = centerY + 120 + cumulativeThickness; // More space from initial measurement
+              const layerThickness = Math.max(layer.dicke * 2, 25); // Dicke in cm, minimum 25px for checkbox
               const layerColor = layerColors[layerIndex % layerColors.length];
+              
+              // Calculate the width of the entire measurement area (from leftmost to rightmost station)
+              const leftmostX = scaleX(minStation);
+              const rightmostX = scaleX(maxStation);
               
               return (
                 <g key={layer.id}>
@@ -163,10 +167,39 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                     y={layerStartY + layerThickness / 2 + 5}
                     className="text-xs fill-slate-600 font-medium"
                   >
-                    {layer.name} ({layer.dicke}m)
+                    {layer.name} ({layer.dicke}cm)
                   </text>
                   
-                  {/* Layer sections between stations - no gaps */}
+                  {/* Full rectangular layer block */}
+                  <rect
+                    x={leftmostX}
+                    y={layerStartY}
+                    width={rightmostX - leftmostX}
+                    height={layerThickness}
+                    fill="#f1f5f9"
+                    stroke={layerColor}
+                    strokeWidth="2"
+                    opacity="0.3"
+                  />
+                  
+                  {/* Vertical station lines in layers */}
+                  {stations.map((station) => {
+                    const x = scaleX(station.station);
+                    return (
+                      <line
+                        key={`station-line-${station.id}-${layer.id}`}
+                        x1={x}
+                        y1={layerStartY}
+                        x2={x}
+                        y2={layerStartY + layerThickness}
+                        stroke="#64748b"
+                        strokeWidth="1"
+                        strokeDasharray="2,2"
+                      />
+                    );
+                  })}
+                  
+                  {/* Layer sections between stations - rectangular blocks only */}
                   {stations.slice(0, -1).map((station, stationIndex) => {
                     const nextStation = stations[stationIndex + 1];
                     const sectionKey = `${station.id}-${nextStation.id}`;
@@ -174,30 +207,24 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                     
                     const x1 = scaleX(station.station);
                     const x2 = scaleX(nextStation.station);
-                    const width1 = station.width * 20;
-                    const width2 = nextStation.width * 20;
                     
                     return (
                       <g key={sectionKey}>
-                        {/* Layer section as solid rectangle - trapezoidal shape following profile */}
-                        <path
-                          d={`M ${x1 - width1/2} ${layerStartY} 
-                              L ${x2 - width2/2} ${layerStartY}
-                              L ${x2 + width2/2} ${layerStartY}
-                              L ${x1 + width1/2} ${layerStartY}
-                              L ${x1 + width1/2} ${layerStartY + layerThickness}
-                              L ${x2 + width2/2} ${layerStartY + layerThickness}
-                              L ${x2 - width2/2} ${layerStartY + layerThickness}
-                              L ${x1 - width1/2} ${layerStartY + layerThickness} Z`}
+                        {/* Rectangular section block */}
+                        <rect
+                          x={x1}
+                          y={layerStartY}
+                          width={x2 - x1}
+                          height={layerThickness}
                           fill={isActive ? layerColor : '#e2e8f0'}
-                          fillOpacity={isActive ? 0.8 : 0.3}
+                          fillOpacity={isActive ? 0.8 : 0.5}
                           stroke={layerColor}
                           strokeWidth="1"
                           className="cursor-pointer transition-all duration-200"
                           onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
                         />
                         
-                        {/* Section activation button - larger radius for better fit */}
+                        {/* Section activation checkbox */}
                         <circle
                           cx={(x1 + x2) / 2}
                           cy={layerStartY + layerThickness / 2}
@@ -228,24 +255,22 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
                     );
                   })}
                   
-                  {/* Layer boundary lines for sandwich effect */}
+                  {/* Layer boundary lines */}
                   <line
-                    x1={margin}
+                    x1={leftmostX}
                     y1={layerStartY}
-                    x2={svgWidth - margin}
+                    x2={rightmostX}
                     y2={layerStartY}
                     stroke={layerColor}
                     strokeWidth="2"
-                    opacity="0.7"
                   />
                   <line
-                    x1={margin}
+                    x1={leftmostX}
                     y1={layerStartY + layerThickness}
-                    x2={svgWidth - margin}
+                    x2={rightmostX}
                     y2={layerStartY + layerThickness}
                     stroke={layerColor}
                     strokeWidth="2"
-                    opacity="0.7"
                   />
                 </g>
               );
