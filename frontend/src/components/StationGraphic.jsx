@@ -104,6 +104,52 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
               strokeDasharray="5,5"
             />
             
+            {/* Polygon connections - top and bottom edges */}
+            {stations.length > 1 && (
+              <>
+                {/* Top polygon connection */}
+                <path
+                  d={`M ${stations.map((station, index) => {
+                    const x = scaleX(station.station);
+                    const halfWidth = (station.width * 20);
+                    return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
+                  }).join(' ')}`}
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                
+                {/* Bottom polygon connection */}
+                <path
+                  d={`M ${stations.map((station, index) => {
+                    const x = scaleX(station.station);
+                    const halfWidth = (station.width * 20);
+                    return `${index === 0 ? 'M' : 'L'} ${x} ${centerY + halfWidth}`;
+                  }).join(' ')}`}
+                  fill="none"
+                  stroke="#3b82f6"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
+                
+                {/* Full polygon fill */}
+                <path
+                  d={`M ${stations.map((station, index) => {
+                    const x = scaleX(station.station);
+                    const halfWidth = (station.width * 20);
+                    return `${index === 0 ? 'M' : 'L'} ${x} ${centerY - halfWidth}`;
+                  }).join(' ')} ${stations.slice().reverse().map((station) => {
+                    const x = scaleX(station.station);
+                    const halfWidth = (station.width * 20);
+                    return `L ${x} ${centerY + halfWidth}`;
+                  }).join(' ')} Z`}
+                  fill="rgba(59, 130, 246, 0.1)"
+                  stroke="none"
+                />
+              </>
+            )}
+
             {/* Station markers and widths */}
             {stations.map((station) => {
               const x = scaleX(station.station);
