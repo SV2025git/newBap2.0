@@ -650,6 +650,28 @@ const MeasurementInterface = () => {
             onClose={() => setShowLayerManager(false)}
           />
         )}
+
+        {showMapModal && (
+          <MapModal
+            isOpen={showMapModal}
+            onClose={() => setShowMapModal(false)}
+            pointsOfInterest={pointsOfInterest}
+            onAddPOI={(poi) => {
+              const newPoi = {
+                id: Date.now(),
+                station: poi.station,
+                name: poi.name,
+                type: poi.type
+              };
+              setPointsOfInterest(prev => [...prev, newPoi].sort((a, b) => a.station - b.station));
+              toast({
+                title: "POI von Karte hinzugefügt",
+                description: `${poi.name} bei Station ${poi.station.toFixed(1)}m wurde hinzugefügt`
+              });
+            }}
+            poiTypes={poiTypes}
+          />
+        )}
       </div>
     </div>
   );
