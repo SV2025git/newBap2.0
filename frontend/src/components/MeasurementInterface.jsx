@@ -273,7 +273,9 @@ const MeasurementInterface = () => {
               zoomLevel={zoomLevel}
               showVoraufmass={showVoraufmass}
               showSchichten={showSchichten}
+              showPOI={showPOI}
               pointsOfInterest={pointsOfInterest}
+              poiTypes={poiTypes}
               onStationUpdate={updateStation}
               onStationDelete={deleteStation}
               onSectionToggle={toggleSectionActivation}
