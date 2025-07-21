@@ -607,14 +607,14 @@ const MeasurementInterface = () => {
                   const totalTonnage = (totalArea * layer.einbaugewicht) / 1000;
                   
                   return (
-                    <div key={layer.id} className="flex items-center gap-4 px-4 py-2 bg-slate-50 rounded-lg">
+                    <div key={layer.id} className="flex items-center gap-3 px-3 py-2 bg-slate-50 rounded-lg">
                       <div 
                         className="w-4 h-4 rounded"
                         style={{ backgroundColor: ['#ef4444', '#f97316', '#eab308'][index % 3] }}
                       ></div>
                       <div className="text-sm">
-                        <div className="font-medium">{layer.name}</div>
-                        <div className="text-muted-foreground">
+                        <div className="font-medium leading-tight">{layer.name}</div>
+                        <div className="text-muted-foreground leading-tight">
                           Fläche: {totalArea.toFixed(2)} m² | Tonnage: {totalTonnage.toFixed(2)} t
                         </div>
                       </div>
@@ -622,7 +622,7 @@ const MeasurementInterface = () => {
                   );
                 })}
                 <div className="px-4 py-2 bg-green-100 rounded-lg">
-                  <div className="font-bold text-green-800">
+                  <div className="font-bold text-green-800 leading-tight">
                     Gesamt: {layers.reduce((total, layer) => {
                       let layerArea = 0;
                       for (let i = 0; i < stations.length - 1; i++) {
