@@ -191,6 +191,8 @@ const MeasurementInterface = () => {
               layers={layers}
               sectionActivation={sectionActivation}
               zoomLevel={zoomLevel}
+              showVoraufmass={showVoraufmass}
+              showSchichten={showSchichten}
               onStationUpdate={updateStation}
               onStationDelete={deleteStation}
               onSectionToggle={toggleSectionActivation}
