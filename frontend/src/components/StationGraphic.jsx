@@ -231,7 +231,7 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
                     fill={isDragged ? "#3b82f6" : isHovered ? "#60a5fa" : "#94a3b8"}
                     stroke={isDragged ? "#1d4ed8" : isHovered ? "#3b82f6" : "#64748b"}
                     strokeWidth="2"
-                    className="transition-all duration-200 cursor-grab active:cursor-grabbing"
+                    className="transition-all duration-200 cursor-move active:cursor-grabbing"
                     onMouseDown={(e) => handleMouseDown(e, station)}
                     onMouseEnter={() => setHoveredStation(station.id)}
                     onMouseLeave={() => setHoveredStation(null)}
