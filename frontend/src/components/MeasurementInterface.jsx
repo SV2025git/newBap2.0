@@ -446,7 +446,7 @@ const MeasurementInterface = () => {
               <CardTitle className="flex items-center justify-between">
                 Points of Interest
                 <Button
-                  onClick={() => setShowMap(!showMap)}
+                  onClick={() => setShowMapModal(true)}
                   variant="outline"
                   size="sm"
                   className="flex items-center gap-2"
@@ -471,6 +471,17 @@ const MeasurementInterface = () => {
                     onChange={(e) => setNewPOI(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="POI Name"
                   />
+                  <select
+                    value={newPOI.type}
+                    onChange={(e) => setNewPOI(prev => ({ ...prev, type: e.target.value }))}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {Object.keys(poiTypes).map(type => (
+                      <option key={type} value={type}>
+                        {poiTypes[type]} {type}
+                      </option>
+                    ))}
+                  </select>
                   <Button onClick={addPointOfInterest} size="sm" className="flex items-center gap-2">
                     <Plus className="w-4 h-4" />
                     POI hinzufügen
@@ -480,19 +491,75 @@ const MeasurementInterface = () => {
                 {/* POI List */}
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {pointsOfInterest.map((poi) => (
-                    <div key={poi.id} className="p-3 bg-slate-50 rounded-lg flex justify-between items-center">
-                      <div>
-                        <h4 className="font-medium text-sm">{poi.name}</h4>
-                        <p className="text-xs text-muted-foreground">Station {poi.station.toFixed(1)}m</p>
+                    <div key={poi.id} className="p-3 bg-slate-50 rounded-lg">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          {editingPOI === poi.id ? (
+                            <div className="space-y-2">
+                              <Input
+                                value={poi.name}
+                                onChange={(e) => updatePointOfInterest(poi.id, 'name', e.target.value)}
+                                className="text-sm"
+                              />
+                              <Input
+                                type="number"
+                                step="0.1"
+                                value={poi.station}
+                                onChange={(e) => updatePointOfInterest(poi.id, 'station', e.target.value)}
+                                className="text-sm"
+                              />
+                              <select
+                                value={poi.type}
+                                onChange={(e) => updatePointOfInterest(poi.id, 'type', e.target.value)}
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              >
+                                {Object.keys(poiTypes).map(type => (
+                                  <option key={type} value={type}>
+                                    {poiTypes[type]} {type}
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="flex gap-2">
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => setEditingPOI(null)}
+                                  className="text-xs"
+                                >
+                                  Speichern
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => setEditingPOI(null)}
+                                  className="text-xs"
+                                >
+                                  Abbrechen
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div onClick={() => setEditingPOI(poi.id)} className="cursor-pointer">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">{poiTypes[poi.type] || '📍'}</span>
+                                <h4 className="font-medium text-sm">{poi.name}</h4>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {poi.type} - Station {poi.station.toFixed(1)}m
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                        {editingPOI !== poi.id && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deletePointOfInterest(poi.id)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deletePointOfInterest(poi.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
                   ))}
                 </div>
@@ -514,17 +581,6 @@ const MeasurementInterface = () => {
                     + Geofence hinzufügen
                   </Button>
                 </div>
-
-                {/* Map placeholder */}
-                {showMap && (
-                  <div className="border rounded-lg p-4 bg-slate-100 h-48 flex items-center justify-center">
-                    <div className="text-center text-muted-foreground">
-                      <div className="text-4xl mb-2">🗺️</div>
-                      <p className="text-sm">Karte wird geladen...</p>
-                      <p className="text-xs mt-1">POIs: {pointsOfInterest.length}</p>
-                    </div>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
