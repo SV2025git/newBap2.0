@@ -8,14 +8,14 @@ import { useToast } from '../hooks/use-toast';
 import StationGraphic from './StationGraphic';
 import LayerManager from './LayerManager';
 import MaterialCalculation from './MaterialCalculation';
-import { mockStations } from '../utils/mockData';
+import { mockStations, mockLayers } from '../utils/mockData';
 
 const MeasurementInterface = () => {
   const [stations, setStations] = useState(mockStations);
   const [newStation, setNewStation] = useState({ station: '', width: '' });
   const [editingId, setEditingId] = useState(null);
   const [projectName, setProjectName] = useState('Neues Messprojekt');
-  const [layers, setLayers] = useState([]);
+  const [layers, setLayers] = useState(mockLayers);
   const [showLayerManager, setShowLayerManager] = useState(false);
   const [sectionActivation, setSectionActivation] = useState({}); // Track which sections are active for each layer
   const { toast } = useToast();
