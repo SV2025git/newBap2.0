@@ -303,41 +303,66 @@ const StationGraphic = ({ stations, onStationUpdate, onStationDelete }) => {
                         />
                       </g>
                       
-                      {/* Edit indicator */}
+                      {/* Edit indicator - dual direction arrows */}
                       <circle
                         cx={x - 15}
                         cy={centerY - halfWidth - 15}
                         r="12"
                         fill="#3b82f6"
-                        className="cursor-grab action-button"
+                        className="cursor-move action-button"
                       />
-                      <g className="cursor-grab action-button">
+                      <g className="cursor-move action-button">
+                        {/* Horizontal arrow */}
                         <line
-                          x1={x - 19}
-                          y1={centerY - halfWidth - 11}
-                          x2={x - 15}
+                          x1={x - 21}
+                          y1={centerY - halfWidth - 15}
+                          x2={x - 9}
                           y2={centerY - halfWidth - 15}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
                         />
+                        <path
+                          d={`M ${x - 11} ${centerY - halfWidth - 17} L ${x - 9} ${centerY - halfWidth - 15} L ${x - 11} ${centerY - halfWidth - 13}`}
+                          stroke="white"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d={`M ${x - 19} ${centerY - halfWidth - 17} L ${x - 21} ${centerY - halfWidth - 15} L ${x - 19} ${centerY - halfWidth - 13}`}
+                          stroke="white"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        {/* Vertical arrow */}
                         <line
                           x1={x - 15}
-                          y1={centerY - halfWidth - 15}
-                          x2={x - 11}
-                          y2={centerY - halfWidth - 19}
+                          y1={centerY - halfWidth - 21}
+                          x2={x - 15}
+                          y2={centerY - halfWidth - 9}
                           stroke="white"
                           strokeWidth="2"
                           strokeLinecap="round"
                         />
-                        <line
-                          x1={x - 11}
-                          y1={centerY - halfWidth - 11}
-                          x2={x - 15}
-                          y2={centerY - halfWidth - 15}
+                        <path
+                          d={`M ${x - 17} ${centerY - halfWidth - 11} L ${x - 15} ${centerY - halfWidth - 9} L ${x - 13} ${centerY - halfWidth - 11}`}
                           stroke="white"
                           strokeWidth="2"
+                          fill="none"
                           strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d={`M ${x - 17} ${centerY - halfWidth - 19} L ${x - 15} ${centerY - halfWidth - 21} L ${x - 13} ${centerY - halfWidth - 19}`}
+                          stroke="white"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         />
                       </g>
                     </g>
