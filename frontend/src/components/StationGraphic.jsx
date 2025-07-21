@@ -150,9 +150,9 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
             {layers.map((layer, layerIndex) => {
               // Calculate cumulative thickness from bottom up
               const layersBelow = layers.slice(0, layerIndex);
-              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 2, 25), 0); // Dicke in cm, minimum 25px
-              const layerStartY = centerY + 80 + cumulativeThickness; // Reduced space from initial measurement (80px instead of 120px)
-              const layerThickness = Math.max(layer.dicke * 2, 25); // Dicke in cm, minimum 25px for checkbox
+              const cumulativeThickness = layersBelow.reduce((sum, l) => sum + Math.max(l.dicke * 2 * zoomLevel, 25 * zoomLevel), 0); // Apply zoom
+              const layerStartY = centerY + (80 * zoomLevel) + cumulativeThickness; // Apply zoom to spacing
+              const layerThickness = Math.max(layer.dicke * 2 * zoomLevel, 25 * zoomLevel); // Apply zoom to thickness
               const layerColor = layerColors[layerIndex % layerColors.length];
               
               // Calculate the width of the entire measurement area (from leftmost to rightmost station)
@@ -219,16 +219,17 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, zoomLev
                         <circle
                           cx={(x1 + x2) / 2}
                           cy={layerStartY + layerThickness / 2}
-                          r="10"
+                          r={Math.max(6 * zoomLevel, 4)} // Scale checkbox with zoom
                           fill={isActive ? layerColor : '#94a3b8'}
                           className="cursor-pointer"
                           onClick={() => onSectionToggle && onSectionToggle(layer.id, sectionKey)}
                         />
                         <text
                           x={(x1 + x2) / 2}
-                          y={layerStartY + layerThickness / 2 + 4}
+                          y={layerStartY + layerThickness / 2 + (3 * zoomLevel)}
                           textAnchor="middle"
-                          className="text-sm fill-white font-bold cursor-pointer pointer-events-none"
+                          className="fill-white font-bold cursor-pointer pointer-events-none"
+                          fontSize={Math.max(12 * zoomLevel, 8)}
                         >
                           {isActive ? '✓' : '○'}
                         </text>
