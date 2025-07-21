@@ -13,11 +13,11 @@ const StationGraphic = ({ stations, layers = [], sectionActivation = {}, onStati
 
   // Calculate dimensions
   const svgWidth = 800;
-  const baseHeight = 400;
+  const baseHeight = 300; // Reduced base height
   const totalLayerThickness = layers.reduce((sum, layer) => sum + Math.max(layer.dicke * 2, 25), 0); // Dicke in cm
-  const svgHeight = baseHeight + totalLayerThickness + 200; // Extra space for labels and gap
+  const svgHeight = baseHeight + totalLayerThickness + 100; // Reduced extra space for labels
   const margin = 50;
-  const centerY = 200; // Fixed center for main profile
+  const centerY = 150; // Reduced center position
   
   // Find min/max stations for scaling
   const minStation = stations.length > 0 ? Math.min(...stations.map(s => s.station)) : 0;
