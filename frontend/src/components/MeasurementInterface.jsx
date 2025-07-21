@@ -471,7 +471,7 @@ const MeasurementInterface = () => {
                   <Input
                     value={newPOI.name}
                     onChange={(e) => setNewPOI(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="POI Name"
+                    placeholder="POI Name (optional)"
                   />
                   <select
                     value={newPOI.type}
