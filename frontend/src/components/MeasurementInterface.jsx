@@ -19,6 +19,8 @@ const MeasurementInterface = () => {
   const [showLayerManager, setShowLayerManager] = useState(false);
   const [sectionActivation, setSectionActivation] = useState({}); // Track which sections are active for each layer
   const [zoomLevel, setZoomLevel] = useState(0.5); // Start at 50% height
+  const [showVoraufmass, setShowVoraufmass] = useState(true); // Show initial measurement
+  const [showSchichten, setShowSchichten] = useState(true); // Show layers
   const { toast } = useToast();
 
   // Initialize section activation when stations or layers change - DEFAULT ALL ACTIVE
